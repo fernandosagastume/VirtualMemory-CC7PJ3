@@ -40,6 +40,19 @@ get_SPTE(void* user_vaddr, struct hash* hash_table){
     return NULL;
 }
 
+bool storeInSPT(struct sup_page_table_entry* SPTE, struct hash* TsupPT){
+  bool success = false;
+  
+  if(!SPTE)
+    success = false;
+
+  struct hash_elem* insert_success = hash_insert(TsupPT, &SPTE->spte_elem);
+
+  if(insert_success)
+    success = true;
+  return success;
+}
+
 bool load_from_swap_SPTE(struct sup_page_table_entry* SPTE){
   return true;
 }

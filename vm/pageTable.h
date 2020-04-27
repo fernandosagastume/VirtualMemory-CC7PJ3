@@ -1,9 +1,10 @@
-#ifndef PAGE_H
-#define PAGE_H
+#ifndef VM_SUP_PAGE_TABLE_H
+#define VM_SUP_PAGE_TABLE_H
 
 #include "filesys/file.h"
 #include "threads/palloc.h"
 #include "lib/kernel/hash.h"
+#include "vm/frameTable.h"
 
 /*Las siguientes definiciones son para indicar el estado en el que 
   se encuentra la página en la SPTE*/
@@ -11,7 +12,6 @@
 #define IN_SWAP 1 //La página se encuentra en un swap slot
 #define PAGE_FILE 2 //Esta activa en memoria
 #define IN_MEMORY 4 //En un .exe
-
 
 /* Supplemental page table element. */
 struct sup_page_table_entry {
@@ -21,8 +21,11 @@ struct sup_page_table_entry {
   bool accessed; //Verdadero si la página fue accesada para lectura/escritura.
   bool page_loaded; //Verdadero si la página esta cargada en la memoria
   uint8_t status; //Indica el estado de la página.
+  size_t swap_index; //Util cuando se necesita guardar en swap
+
   struct hash_elem spte_elem; 	
 };
+
 
 //----------------------------------------------------------------------
 /*Funciones utilizadas y requeridas para incializar el hash table que 
@@ -44,6 +47,11 @@ bool SPTE_less (const struct hash_elem* a,
   la SPTE asociada a la misma*/
 struct sup_page_table_entry* 
 get_SPTE(void* user_vaddr, struct hash* hash_table);
+
+/*Función que guarda una supplemental page table creada, en la SPT
+ asociada al thread que de quien esta siendo creada (i.e el thread
+ owner de un frame)*/
+bool storeInSPT(struct sup_page_table_entry* SPTE, struct hash* TsupPT);
 
 //----------------------------------------------------------------------
 /*Funcionaes que se usan para cargar datos de una página en 

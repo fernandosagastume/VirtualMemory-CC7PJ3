@@ -3,6 +3,8 @@
 #include "threads/thread.h"
 #include "threads/palloc.h"
 #include "vm/pageTable.h"
+#include <stddef.h>
+#include "vm/swap.h"
 
 //a list of frame_table_entry as the page table
 struct list frame_table;

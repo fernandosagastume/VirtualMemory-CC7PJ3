@@ -1,7 +1,4 @@
 #include "vm/frameTable.h"
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include "threads/thread.h"
 #include "threads/synch.h"
 #include "threads/malloc.h"
@@ -9,6 +6,13 @@
 #include "threads/palloc.h"
 #include "userprog/pagedir.h"
 #include "vm/pageTable.h"
+#include "lib/kernel/bitmap.h"
+#include "threads/vaddr.h"
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
 
 //-------------------------VARIABLES LOCALES--------------------------------//
 //Lock utilizado en operaciones de insert a listas, entre otros usos.
@@ -133,6 +137,36 @@ getPTEandUvaddr(void* frame, void* upage, uint32_t* pte){
 
 bool 
 evicted_save(struct frame_table_entry* victima){
+
+  struct thread* owner = victima->thread_owner;
+  //Se busca la supplemental page table asociada al thread owner
+  struct sup_page_table_entry* vSPTE = get_SPTE(victima->user_vaddr, &owner->SPT);
+  //Si no se encuentra una spte asociada se crea una
+  if(!vSPTE){
+    vSPTE = malloc(sizeof(struct sup_page_table_entry));
+    vSPTE->user_vaddr = victima->user_vaddr;
+    vSPTE->status = IN_SWAP;
+    bool success = storeInSPT(vSPTE, &owner->SPT);
+    if(!success)
+      return false;
+  }
+  size_t index;
+  bool page_dirty = pagedir_is_dirty(owner->pagedir, vSPTE->user_vaddr);
+  if(page_dirty && (vSPTE->status == IN_SWAP)){
+    index = write_from_swap(vSPTE->user_vaddr);
+    if(index == BITMAP_ERROR)
+      return false;
+    else
+      vSPTE->status = IN_SWAP|vSPTE->status; //PENDIENTE
+  }
+  
+  //Se llena de ceros el frame de la victima
+  memset(victima->frame, 0, PGSIZE);
+  //Se guarda el indice el cual se le asignó en el swap bitmap
+  vSPTE->swap_index = index;
+  //Como ya no está en memoria y ahora esta en swap, se pone false
+  vSPTE->page_loaded = false;
+  pagedir_clear_page (owner->pagedir, vSPTE->user_vaddr);
   
   return true;
 }

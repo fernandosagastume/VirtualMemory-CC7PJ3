@@ -7,5 +7,4 @@
 void swap_init(void);
 void read_from_swap(void* frame, int index);
 size_t write_from_swap(void* frame);
-
 #endif /* vm/swap.h */
