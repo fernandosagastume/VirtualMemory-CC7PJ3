@@ -1,0 +1,24 @@
+Lista de cambios para Priority Scheduler y Priority Donation:
+
+* Se modificó struct thread del archivo thread.h, y se agregaron los siguientes campos en struct thread: 
+	- int priorityInit;                  /* Se añade una prioridad base que es con la que incia el thread*/
+	- struct list holdingLocks;           /*Una lista de locks que el thread actualmente tiene*/
+	- struct list donantes;               /*Una lista de a quienes se les dona prioridad*/
+    - struct list_elem donantesElem;      /*Sirve para iterar en la lista de donantes*/
+	- struct lock *waitingLock;           /*El lock que esta siendo esperado por el thread para donación*/
+
+* Se modificó la función init_thread() del archivo thread.c donde solamente se inicializaron los nuevos campos definidos en el thread struct en el archivo thread.h
+
+* Se agregó la función void checkMaxCurrentT(void), que es una función que decide si se hace yield() al CPU o no.
+
+* Se agregó bool priorityCompareTATB() la cual es una función utilizada para ordenar listas tanto en thread.c como en synch.c y se encuentra definida en thread.h
+
+* Se realizaron cambios en thread_yield() y thread_unblock(), se eliminó el list_push_back() y se sustituyó por list_insert_ordered.
+
+* Se realizaron cambios en la función thread_create(), se implemento funcionalidad del priority scheduling pero no del todo.
+
+* Se añadió la inicialización de bool priorityCompareCondvarSemaphore() en synch.h y se definió en synch.c
+
+* Test de priority-change, priority-fifo, priority-preempt, priority-sema, priority-condvar y alarm-priority pasados.
+
+* Referencias https://jeason.gitbooks.io/pintos-reference-guide-sysu/priority_donating.html

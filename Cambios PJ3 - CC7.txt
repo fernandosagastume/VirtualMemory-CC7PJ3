@@ -1,0 +1,47 @@
+Cambios PJ3 - CC7:
+
+//------------------------------------- Stack Growth y Eviction ------------------------------------------//
+	
+* Se agregó una constante ----> #define USER_VADDR ((void *) 0x08048000), indica el bottom user valid address. Definida en userprog/exception.h
+
+* Se agregó una constante ----> #define LIM_STACK ((void *) 0x40000000), indica el stack limit address. Definida en userprog/exception.h
+
+* Se modificó la función void page_fault() en el archivo userprog/exception.c, se manejaron los casos mencionados en la pintos guide, los cuales son si la fault address es null pointer, una kernel address, y write violation entonces eso provoca que sea una dirección invalida, lo cual debe por consecuencia provocar un syscall_exit(-1). Además se llevan a cabo verificaciones en caso de que sea necesario hacer crecer el stack. Por último se agregó la función install_page().
+
+* Se agregó en threads/init.c, la incialización de la struct list frame_table y otras estructuras definidas en vm/frameTable.h (La funcion es init_frameTable() definida en vm/frameTable.h).
+
+* Se agregaron y definieron las siguientes funciones (en vm/frameTable.h y vm/frameTable.c):
+
+	- void init_frameTable(void); //Se incializan elementos necesarios.
+		
+	- void *get_pageFT(enum palloc_flags); //Se obtiene la pagina y se guarda en la lista frame_table
+	
+	- void free_frameTable(void *); //Remueve los frames de la frame_table.
+
+	- void* evict_page(void);/*Función que se utiliza para abrir espacio para una nueva página
+	  							en caso de que haya que hacer Eviction*/
+	
+	- struct frame_table_entry* select_victim(void); /*Se elige la victima a la cual se le 
+													 hará evict de la memoria cache*/
+	
+	- bool evicted_save(struct frame_table_entry* victima); /*Se guarda el contenido del evicted frame*/
+
+	- void getPTEandUvaddr(void* frame, void* upage, uint32_t* pte); /*Función para guardar la pte y user
+	 																   virtual address mapeado al frame*/
+
+* Se modificó la función pagedir_set_page() en el archivo userprog/pagedir.c. Se agregó en la linea 118 de ese archivo la función getPTEandUvaddr() para ir a traer campos necesarios para la frame table entry de cada frame. Además se sustituyeron ls función palloc_free_page() por la función free_frameTable() en las líneas 46, 47, y 49 del archivo. 
+
+* Se sustituyeron las funciones palloc_free_page() y palloc_get_page() en el archivo userprog/process.c por la funciones free_frameTable() y get_pageFT() en las funciones load_segment, setup_stack de ese archivo. 
+
+* Se agregaron dos nuevos archivos, vm/pageTable.c y vm/pageTable.h en donde se agregaron y se definieron las siguientes funciones:
+
+	/* Supplemental page table element. */
+	- struct sup_page_table_entry; /*Struct donde se guarda información adicional a la page table de cada 									proceso.*/
+
+	/*Función que busca dada una hash table y un user virtual address
+  	 la SPTE asociada a la misma*/
+	- struct sup_page_table_entry* get_SPTE(void* user_vaddr, struct hash* hash_table);
+
+* Se crea un nuevo campo en struct thread en el archivo threads/thread.h, el cual es un campo el cual es usado para asociar una supplemental page table representado como una hash table. Luego el hash table se define en userprog/process.c dentro de la función start_process().
+
+//------------------------------------- Stack Growth y Eviction ------------------------------------------//

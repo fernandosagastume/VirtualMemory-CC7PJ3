@@ -1,0 +1,52 @@
+Cambios PJ2 - CC7:
+
+**IMPORTANTE: Se modificó el lock arquire y release a su estado incial con fines de que no interfiera con el proyecto 2**
+
+//------------------------------------- Argument Passing----------------------------------------------------//
+
+* Se realizó cambio en la función process_execute() en el archivo process.c, solamente se sustituyo el *filename* que se manda de argumento en thread_create() por *exec_name* variable que extrae el nombre del proceso del raw filename. Leer la pintos guide para información de esto. 
+
+*Se cambió la función setup_stack() ubicada en userprog/process.c, se le agrego un nuevo argumento a la función "char *filename". Se modificó tambien la función load() ubicada tambien en userprog/process.c, donde por medio de un tokenizer se hace split del file_name, con el fin de sacar el nombre del file ya que file_name viene en formato file_name = "argname arg1 arg2 ...". Luego se pasa ese argname como argumento al file system.
+
+* En setup_stack(), se hizo lo mismo de tokenizar el char *filename para sacar los args y guardarlos en un array. Luego se sacan en reversa los argumentos del filename, y se meten en el stack, en este proceso también se abre espacio en el stack para que quepa el \0 al final de cada arg. Luego se hace un word align de 0, seguido de eso, se mete un char * 0. Luego se meten las referencias de cada arg igualmenten en reversa, luego se coloca la referencia del ulitmo argv (argv[0]), luego se mete la cantidad de argumentos argc y por ultimo un return default que es 0. 
+
+//------------------------------------- Argument Passing ----------------------------------------------------//
+
+//------------------------------------- System Calls --------------------------------------------------------//
+
+* Se agrega las siguientes funciones en userprog/syscall.h y userprog/syscall.c:
+	- void syscall_halt (void); 
+	- void syscall_exit (int exit_status);
+	- bool syscall_create(const char* file, unsigned initial_size);
+	- bool syscall_remove(const char* file);
+
+* Para referencia de estas funciones ver la guia de pintos.
+
+* Se agrega la funcion sycall_create, que basicamente crea un nuevo archivo con un tamaño inicial de bytes y devuelve verdadero o falso en función de si se pudo crear de manera exitosa. La creación del archivo se lleva a cabo por medio de filesys_create(). Se utiliza un lock para prevenir lecturas o escrituras antes de que el archivo sea creado.
+* Para la función syscall_remove se lleva a cabo la misma metodología que en syscall_create.
+
+* La función syscall_open basicamente es abrir un archivo con un nombre dado, y devolver devolver un file descriptor el cual fue asignado por el thread que lo abrió. Para esta función se necesito crear varias cosas, entre ellas struct fileDescriptor; en el archivo userprog/syscall.c el cual sirve para llevar control de cada file, file descriptor y la lista de file descriptors del thread actual. También se modificó la threads/thread.h y threads/thread.c en donde se agregaron y se incializaron (en la función init_thread() en threads/thread.c) respectivamente los siguientes dos campos:
+	- int fdSZ;                            /*file descriptor size*/
+    - struct list fdList;                 /*Una lista con los file descriptors del thread actual*/ 
+
+* La función int syscall_filesize(int fd) lo que hace es devolver el tamaño en bytes de un archivo el cual esta actualmente abierto como un file descriptor. Para llevar a cabo esta función se verifica si hay file descriptors asociados al thread, si los hay entonces se verifica que fd que se da en la función esta abierto y si pertenece al thread actual, y si eso se cumple entonces se devuelve el size del archivo por medio de la función file_length() (definida en filesys/file.h). Si no, entonces se devuelve -1 indicando que no se encontró el archivo. 
+
+* La función int syscall_read(int fd, void* buffer, unsigned size), lo que hace es leer el tamaño en bytes de un buffer dado a el file descriptor del archivo que esta abierto. Devuelve -1 si no se pudo leer el archivo, de lo contrario se devuelve la cantidad de bytes que leyó. Para llevar a cabo esto primero se verificaron los casos base: 
+	1. Si el fd que se le pasa a la función es igual a uno, o si no hay file descriptors en la lista de file descriptors del thread actual, entonces los bytes leidos son 0, porque fd = 1 signfica escritura. 
+	2. Si el fd es igual a 0, entonces se lee del teclado con la función input_getc() (definida en 
+	devices/input.h). 
+	3. Se verifica si hay file descriptors asociados al thread, si los hay entonces se verifica que fd que se da en la función esta abierto y si pertenece al thread actual, si es verdad entonces se procede a leer del archivo con la función file_read() (definida en fylesys/file.h).
+
+* La función int syscall_write(int fd, const void* buffer, unsigned size), lo que hace es escribir el tamaño en bytes de un buffer dado a el file descriptor del archivo que esta abierto. Devuelve el número de bytes realmente escritos, que puede ser menor que el tamaño si no se pueden escribir algunos bytes. Devuelve 0 si no se pudo escribir ningún byte. Para llevar a cabo esto primero se verificaron los casos base: 
+	1. Si el fd que se le pasa a la función es igual a cero, o si no hay file descriptors en la lista de file descriptors del thread actual, entonces los bytes escritos son 0, porque fd = 0 signfica lectura. 
+	2. Si el fd es igual a 1, entonces se escribe a consola con la función putbuf() (definida en kernel/console.c), y luego se la cantidad de bytes que se devuelven son el parametro "unsigned size" que se le pasa a esta función (syscall_write).
+	3. Se verifica si hay file descriptors asociados al thread, si los hay entonces se verifica que fd que se da en la función esta abierto y si pertenece al thread actual, si es verdad entonces se procede a escribir el archivo con la función file_write() (definida en fylesys/file.h).
+
+
+* La función void syscall_seek(int fd, unsigned position) lo que hace es devolver el siguiente byte que será leído o escrito en el file descriptor del archivo que esta abierto expresado en bytes en el inicio del archivo, donde la position 0 es el incicio del archivo. Para llevar a cabo esta función se verifica si hay file descriptors asociados al thread, si los hay entonces se verifica que fd que se da en la función esta abierto y si pertenece al thread actual, y si eso se cumple entonces se realiza el file_tell() (definido en filesys/file.h) del archivo ubicado en los file descriptors del thread actual. 
+
+* La función unsigned syscall_tell(int fd) lo que hace es devolver el siguiente byte que será leído o escrito en el file descriptor del archivo que esta abierto expresado en bytes en el inicio del archivo, donde la position 0 es el incicio del archivo. Para llevar a cabo esta función se verifica si hay file descriptors asociados al thread, si los hay entonces se verifica que fd que se da en la función esta abierto y si pertenece al thread actual, y si eso se cumple entonces se realiza el file_tell() (definido en filesys/file.h) del archivo ubicado en los file descriptors del thread actual.  
+
+* La función void syscall_close(int fd) lo que hace es cerrar el file descriptor fd, lo cual implica salir o terminar todos sus file descriptors que están abiertos como si se llamara esta función para todos esos file descriptors. Para llevar a cabo esta función se verifica si hay file descriptors asociados al thread, si los hay entonces se verifica que fd que se da en la función esta abierto y si pertenece al thread actual, y si eso se cumple entonces se realiza el file_close() (definido en filesys/file.h) del archivo dado y se remueven los file descriptors de la lista de file descriptors del thread actual uno por uno como sugiere este función.  
+
+//------------------------------------- System Calls --------------------------------------------------------//
