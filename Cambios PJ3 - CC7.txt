@@ -38,10 +38,79 @@ Cambios PJ3 - CC7:
 	/* Supplemental page table element. */
 	- struct sup_page_table_entry; /*Struct donde se guarda información adicional a la page table de cada 									proceso.*/
 
-	/*Función que busca dada una hash table y un user virtual address
+	 /* Computes and returns the hash value for hash element E, given auxiliary data AUX. */
+	- unsigned SPTE_hash (const struct hash_elem* e, void* aux);
+
+	 /* Compares the value of two hash elements A and B, given auxiliary data AUX.  Returns true if A is 		less than B, or false if A is greater than or equal to B. */
+	- bool SPTE_less (const struct hash_elem* a, const struct hash_elem* b, void* aux);
+
+	 /*Función que busca dada una hash table y un user virtual address
   	 la SPTE asociada a la misma*/
 	- struct sup_page_table_entry* get_SPTE(void* user_vaddr, struct hash* hash_table);
 
-* Se crea un nuevo campo en struct thread en el archivo threads/thread.h, el cual es un campo el cual es usado para asociar una supplemental page table representado como una hash table. Luego el hash table se define en userprog/process.c dentro de la función start_process().
+	 /*Función destructrora cuando se desea destruir un elemento de la hash table dada*/
+	- void destructor_func (struct hash_elem* e, void* aux UNUSED);
 
-//------------------------------------- Stack Growth y Eviction ------------------------------------------//
+	 /*Se destruye la Supplemental Page Table asociada dada*/
+	- void destroy_SPT(struct hash* SPT);
+
+	 /*Función que guarda una supplemental page table creada, en la SPT asociada al thread que de quien esta siendo creada (i.e el thread owner de un frame)*/
+	- bool storeInSPT(struct sup_page_table_entry* SPTE, struct hash* TsupPT);
+
+
+* Se crea un nuevo campo en struct thread en el archivo threads/thread.h, el cual es un campo el cual es usado para asociar una supplemental page table representado como una hash table. Luego el hash table se define en userprog/process.c dentro de la función start_process() y cuando un proceso hace exit por medio de la función process_exit() se destruye la supplemental page table asociada al thread del proceso actual por medio de la función hash_destroy. La función que se encarga de hacer el hash_destroy está ubicada en el archivo "vm/pageTable.c" con el nombre de destroy_SPT().
+
+//------------------------------------- Stack Growth y Eviction -----------------------------------------//
+
+//--------------------------------------------- Reclamation ---------------------------------------------//
+
+* Se agregaron las siguientes definiciones en vm/pageTable.h:
+
+	 /*Las siguientes definiciones son para indicar el estado en el que 
+      se encuentra la página en la SPTE*/
+
+	-> #define IN_SWAP 1 //La página se encuentra en un swap slot
+	-> #define FROM_EXE 2 ////En un ejecutable
+	-> #define IN_MEMORY 4 //Esta activa en memoria
+
+* En vm/pageTable.c y vm/pageTable.h se agregaron y se definieron las siguientes funciones:
+
+//----------------------------------------------------------------------------------------------------------
+	 /*Funcionaes que se usan para cargar datos de una página en 
+	 su SPTE, usado para el proceso de reclamation.*/
+
+	- bool load_from_swap_SPTE(struct sup_page_table_entry* SPTE);
+//----------------------------------------------------------------------------------------------------------
+
+* Se agregaron dos nuevos archivos, vm/swap.c y vm/swap.h en donde se agregaron y se definieron las siguientes funciones, variables y definiciones:
+	
+	//----------------------------------------- Variables -----------------------------------------------//
+	 //Make the swap block global
+	- struct block* global_swap_block;
+
+	 /* Bitmap del swap slot*/
+	- struct bitmap* swap_bitmap;
+
+	 //Sectores necesitados por página
+	- #define SECTORxPAGE (PGSIZE/BLOCK_SECTOR_SIZE)
+	//----------------------------------------- Variables -----------------------------------------------//
+
+	//----------------------------------------- Funciones -----------------------------------------------//
+	 //Get the block device when we initialize our swap code
+	- void swap_init(void);
+
+	 /*Función que saca el frame guardado en el swap y toda su información y la coloca en una página en memoria*/
+	- void read_from_swap(void* frame, size_t index);
+
+	 //Función que guarda un frame y su información en el swap
+	- size_t write_from_swap(void* frame);
+
+	 //Se hace para eliminar un indice del swap bitmap (Leer bitmaps en la guia de pintos para saber más)
+	- void swap_flip(size_t index);
+	//--------------------------------------------- Funciones -------------------------------------------//
+
+* Se agrego la función swap_init() en el archivo "threads/init.c" y locate_block_devices() definida en también definida el init.c, que en el mismo archivo definen esa función como /* Figure out what block devices to cast in the various Pintos roles. */, en el caso del swap ese block device que va a traer es el BLOCK_SWAP.
+
+* Se agregó en el archivo "userprog/exception.c" los casos para reclamation que basicamente es que si una página se detecta que no está cargada, entonces habría que cargarla por medio de la función load_from_swap_SPTE() que va y trae el faul frame en caso de que estuviera albergado en el SWAP.
+
+//--------------------------------------------- Reclamation ---------------------------------------------//

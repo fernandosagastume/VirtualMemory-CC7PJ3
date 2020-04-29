@@ -182,8 +182,6 @@ page_fault (struct intr_frame *f)
       if(!SPTE->page_loaded){
         if(SPTE->status == IN_SWAP)
           success = load_from_swap_SPTE(SPTE);
-        else if(SPTE->status == PAGE_FILE)
-          success = load_from_file_SPTE(SPTE);
       }
     }
     //Se verifica que el fault address este en user space

@@ -10,8 +10,8 @@
   se encuentra la página en la SPTE*/
 
 #define IN_SWAP 1 //La página se encuentra en un swap slot
-#define PAGE_FILE 2 //Esta activa en memoria
-#define IN_MEMORY 4 //En un .exe
+#define FROM_EXE 2 ////En un ejecutable
+#define IN_MEMORY 4 //Esta activa en memoria
 
 /* Supplemental page table element. */
 struct sup_page_table_entry {
@@ -22,7 +22,7 @@ struct sup_page_table_entry {
   bool page_loaded; //Verdadero si la página esta cargada en la memoria
   uint8_t status; //Indica el estado de la página.
   size_t swap_index; //Util cuando se necesita guardar en swap
-
+  bool is_swap_W; //Verdadero si no es read-only.
   struct hash_elem spte_elem; 	
 };
 
@@ -47,6 +47,13 @@ bool SPTE_less (const struct hash_elem* a,
   la SPTE asociada a la misma*/
 struct sup_page_table_entry* 
 get_SPTE(void* user_vaddr, struct hash* hash_table);
+
+/*Función destructrora cuando se desea destruir un elemento
+  de la hash table dada*/
+void destructor_func (struct hash_elem* e, void* aux UNUSED);
+
+/*Se destruye la Supplemental Page Table asociada dada*/
+void destroy_SPT(struct hash* SPT);
 
 /*Función que guarda una supplemental page table creada, en la SPT
  asociada al thread que de quien esta siendo creada (i.e el thread

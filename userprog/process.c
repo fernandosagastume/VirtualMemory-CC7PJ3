@@ -112,6 +112,10 @@ process_exit (void)
   //Process termination message
   //printf ("%s: exit(%d)\n", thread_current()->name, exit_status);
 
+  /*Cuando un proceso hace exit, el thread actual debe de destruir
+    su Supplemental Page Table*/
+  destroy_SPT(&cur->SPT);
+
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
   pd = cur->pagedir;

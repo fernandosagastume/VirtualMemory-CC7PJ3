@@ -8,6 +8,7 @@
 #include "vm/pageTable.h"
 #include "lib/kernel/bitmap.h"
 #include "threads/vaddr.h"
+#include "threads/pte.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -35,10 +36,14 @@ void * get_pageFT(enum palloc_flags pFlags){
   struct frame_table_entry *FTE = malloc(sizeof(struct frame_table_entry));
   void * fa = NULL; 
   //Se obtiene la virtual address de una free page para una user page
-  if((pFlags & PAL_ZERO)!=0)
-    fa = palloc_get_page(pFlags);
-  else
-    fa = palloc_get_page(PAL_USER);
+   if (pFlags & PAL_USER)
+    {
+      if (pFlags & PAL_ZERO)
+        fa = palloc_get_page (PAL_USER | PAL_ZERO);
+      else
+        fa = palloc_get_page (PAL_USER);
+    }
+
 
   if(fa != NULL){
     lock_acquire(&ftLock);
@@ -58,11 +63,13 @@ void* evict_page(){
   struct frame_table_entry *victima;
   //Se selecciona la victima para saber que frame sera evicted
   victima = select_victim();
+  //Se guarda la victima en swap
+  bool save_success = evicted_save(victima);
 
   if(victima == NULL)
     PANIC("El algoritmo no encontró una victima");
-  //No se pudo guardar la victima
-  if(!evicted_save(victima))
+  //No se pudo guardar la victima en swap
+  if(!save_success)
     PANIC("Error al guardar el evicted frame");
 
   //Se limpia la victima
@@ -151,13 +158,16 @@ evicted_save(struct frame_table_entry* victima){
       return false;
   }
   size_t index;
+  //PEDIENTE IMPLEMENTACIONES DE MMAP
   bool page_dirty = pagedir_is_dirty(owner->pagedir, vSPTE->user_vaddr);
-  if(page_dirty && (vSPTE->status == IN_SWAP)){
+  //Nos aseguramos que el status sea 0 o IN_SWAP
+  if(page_dirty || (vSPTE->status != FROM_EXE)){
     index = write_from_swap(vSPTE->user_vaddr);
     if(index == BITMAP_ERROR)
       return false;
     else
-      vSPTE->status = IN_SWAP|vSPTE->status; //PENDIENTE
+      //Se setea el status como IN_SWAP
+      vSPTE->status = IN_SWAP|vSPTE->status;
   }
   
   //Se llena de ceros el frame de la victima
@@ -166,8 +176,11 @@ evicted_save(struct frame_table_entry* victima){
   vSPTE->swap_index = index;
   //Como ya no está en memoria y ahora esta en swap, se pone false
   vSPTE->page_loaded = false;
+  //Verdadero si la página es writable. 
+  bool is_writable = *(victima->pte) & PTE_W; //PTE_W -> 1 sí es writable, 0 read-only
+  vSPTE->is_swap_W = is_writable;
   pagedir_clear_page (owner->pagedir, vSPTE->user_vaddr);
-  
+
   return true;
 }
 

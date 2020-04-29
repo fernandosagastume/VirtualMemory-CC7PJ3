@@ -7,8 +7,10 @@
 
 //Make the swap block global
 struct block* global_swap_block;
+
 /* Bitmap del swap slot*/
 struct bitmap* swap_bitmap;
+
 //Sectores necesitados por página
 #define SECTORxPAGE (PGSIZE/BLOCK_SECTOR_SIZE)
 
@@ -35,7 +37,7 @@ void swap_init(void){
  the information of one page. This means if we want to read or write a page into disk using a 
  block, you’ll need to read or write 8 consecutive blocks (PGSIZE / BLOCK_SECTOR_SIZE)*/
 
-void read_from_swap(void* frame, int index){
+void read_from_swap(void* frame, size_t index){
 	//Se castea el frame para uso posterior
 	uint8_t* frame_ = (uint8_t *)frame;
 	/*Antes de empezar se verifica si no se está tratando de 
@@ -72,4 +74,8 @@ size_t write_from_swap(void* frame){
 		 frame_ + (i*BLOCK_SECTOR_SIZE));
 	}
 	return index;
+}
+
+void swap_flip(size_t index){
+	bitmap_flip(swap_bitmap, index);
 }
