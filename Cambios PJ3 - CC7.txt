@@ -114,3 +114,16 @@ Cambios PJ3 - CC7:
 * Se agregó en el archivo "userprog/exception.c" los casos para reclamation que basicamente es que si una página se detecta que no está cargada, entonces habría que cargarla por medio de la función load_from_swap_SPTE() que va y trae el faul frame en caso de que estuviera albergado en el SWAP.
 
 //--------------------------------------------- Reclamation ---------------------------------------------//
+
+//--------------------------------------------- Lazy Loading --------------------------------------------//
+
+* Se definió la función lazy_loading() en el archivo "userprog/process.c", en donde es una copia de la función load_segment() del mismo archivo, con la ligera diferencia de que en vez de cargar todas las páginas todas a la vez, solamente se guardan en una Supplemental page table con el objetivo de que se carguen una por una dependiendo de cuando se requiera cierta página en run time.
+
+* Se agregó y se definió la función add_EXE_to_SPTE(); en el archivo vm/pageTable.h y vm/pageTable.c, la cual se encarga de guardar los datos de un exe o un archivo en la SPTE y luego guardar esa SPTE en la supplemental page table del proceso asociado. Además se agregaron nuevos campos al struct sup_page_table_entry en vm/pageTable.h, donde se guardan la información del archivo. 
+
+* Ahora como los archivos se cargan uno a uno, todo se maneja con reclamation, ya que cuando se va necesitando un archivo en run time, se hace el proceso de reclamation y se busca el archivo en la Supplemental Page Table y se carga. Todo lo anterior se hace en la función en el archivo "vm/pageTable.c"
+con el nombre de load_from_file_SPTE().
+
+//--------------------------------------------- Lazy Loading --------------------------------------------//
+
+

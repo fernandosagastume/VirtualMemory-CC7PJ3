@@ -126,7 +126,7 @@ process_exit (void)
          so that a timer interrupt can't switch back to the
          process page directory.  We must activate the base page
          directory before destroying the process's page
-         directory, or our active page directory will be one
+         directory, or our active page directory will be onlye
          that's been freed (and cleared). */
       cur->pagedir = NULL;
       pagedir_activate (NULL);
@@ -219,6 +219,12 @@ static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
                           uint32_t read_bytes, uint32_t zero_bytes,
                           bool writable);
 
+//----------------------- Our Implementation -----------------------------//
+static bool lazy_loading (struct file *file, off_t ofs, void* upage,
+                          uint32_t read_bytes, uint32_t zero_bytes,
+                          bool writable);
+//----------------------- Our Implementation -----------------------------//
+
 /* Loads an ELF executable from FILE_NAME into the current thread.
    Stores the executable's entry point into *EIP
    and its initial stack pointer into *ESP.
@@ -250,6 +256,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
   if (file == NULL) 
     {
       printf ("load: %s: open failed\n", exec_name);
+      file_close(file);
       goto done; 
     } 
 
@@ -315,8 +322,8 @@ load (const char *file_name, void (**eip) (void), void **esp)
                   read_bytes = 0;
                   zero_bytes = ROUND_UP (page_offset + phdr.p_memsz, PGSIZE);
                 }
-              if (!load_segment (file, file_page, (void *) mem_page,
-                                 read_bytes, zero_bytes, writable))
+              if (!lazy_loading(file, file_page, (void *) mem_page,
+                                read_bytes, zero_bytes, writable))
                 goto done;
             }
           else
@@ -334,10 +341,9 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
   success = true;
   free(copy); //Libera memoria
- done:
-  /* We arrive here whether the load is successful or not. */
-  file_close (file);
-  return success;
+
+  done:
+    return success;
 
 }
 
@@ -403,7 +409,7 @@ validate_segment (const struct Elf32_Phdr *phdr, struct file *file)
    user process if WRITABLE is true, read-only otherwise.
 
    Return true if successful, false if a memory allocation error
-   or disk read error occurs. */
+   or disk read error occurs. */ /*HACER LAZY LOADING*/
 static bool
 load_segment (struct file *file, off_t ofs, uint8_t *upage,
               uint32_t read_bytes, uint32_t zero_bytes, bool writable) 
@@ -448,6 +454,44 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
     }
   return true;
 }
+
+/*Lazy loads a segment starting at offset OFS in FILE at address
+   UPAGE. Ya no se cargan todas las páginas de un solo, sino que
+   solamente se cargan cuando una página es necesitada en run time*/
+
+static bool
+lazy_loading (struct file *file, off_t ofs, void* upage,
+              uint32_t read_bytes, uint32_t zero_bytes, bool writable) 
+{
+  ASSERT ((read_bytes + zero_bytes) % PGSIZE == 0);
+  ASSERT (pg_ofs (upage) == 0);
+  ASSERT (ofs % PGSIZE == 0);
+
+  while (read_bytes > 0 || zero_bytes > 0) 
+    {
+      /* Calculate how to fill this page.
+         We will read PAGE_READ_BYTES bytes from FILE
+         and zero the final PAGE_ZERO_BYTES bytes. */
+      size_t page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
+      size_t page_zero_bytes = PGSIZE - page_read_bytes;
+
+       /*Se añade el archivo en la SPT del thread actual para cargarla cuando
+        lo requiera en run time*/
+      bool success = add_EXE_to_SPTE(file, ofs, upage, page_read_bytes,
+                                     page_zero_bytes, writable);
+      /*Si no se pudo guardar devolver falso*/
+      if (!success) 
+        {
+          return false; 
+        }
+
+      read_bytes -= page_read_bytes;
+      zero_bytes -= page_zero_bytes;
+      upage += PGSIZE;
+    }
+  return true;
+}
+
 
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */

@@ -17,12 +17,19 @@
 struct sup_page_table_entry {
 
   void* user_vaddr; //User virtual address asociada a la SPTE.
-  bool dirty; //Verdadero si se escribió en la página.
-  bool accessed; //Verdadero si la página fue accesada para lectura/escritura.
   bool page_loaded; //Verdadero si la página esta cargada en la memoria
   uint8_t status; //Indica el estado de la página.
   size_t swap_index; //Util cuando se necesita guardar en swap
   bool is_swap_W; //Verdadero si no es read-only.
+
+  //Campos utilizados para guardar executables o archivos
+  struct file * exe; //El archivo que se guarda
+  off_t file_offset; //offset donde inicia el archivo
+  uint32_t file_read_bytes; /*READ_BYTES bytes at UPAGE must be read from FILE
+        				starting at offset OFS.*/
+  uint32_t file_zero_bytes; /*ZERO_BYTES bytes at UPAGE + READ_BYTES must be zeroed.*/
+  bool file_writable; /*WRITABLE if true, read-only otherwise.*/
+
   struct hash_elem spte_elem; 	
 };
 
@@ -64,8 +71,21 @@ bool storeInSPT(struct sup_page_table_entry* SPTE, struct hash* TsupPT);
 /*Funcionaes que se usan para cargar datos de una página en 
 su SPTE, usado para el proceso de reclamation.*/
 
+/*Se carga la información que se guardo en el swap por eviction*/
 bool load_from_swap_SPTE(struct sup_page_table_entry* SPTE);
+
+
+/*Basicamente lo que se hace en esta función es lo que ya se hacia
+  en la función de load_segment() pero que dado a que ahora todo se 
+  hace con lazy loading, ahora solo se carga lo que se este requiriendo
+  en un momento dado en el run time.*/
 bool load_from_file_SPTE(struct sup_page_table_entry* SPTE);
+
+/*Se guardan los datos de un exe o un archivo en la SPTE y luego
+ se guarda en la supplemental page table del proceso asociado*/ 
+bool add_EXE_to_SPTE (struct file *file, off_t ofs, void* upage,
+                      uint32_t read_bytes, uint32_t zero_bytes,
+                      bool writable);
 //----------------------------------------------------------------------
 
 #endif /* vm/pageTable.h */
