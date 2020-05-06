@@ -116,7 +116,7 @@ struct frame_table_entry* select_victim(){
 void 
 getPTEandUvaddr(void* frame, void* upage, uint32_t* pte){
   //Se verifica que no se tenga vacía la frame table
-  ASSERT(!list_empty(&frame_table));
+  //ASSERT(!list_empty(&frame_table));
 
   lock_acquire (&ftLock);
   struct frame_table_entry* FTE;
@@ -136,8 +136,7 @@ getPTEandUvaddr(void* frame, void* upage, uint32_t* pte){
     FTE->user_vaddr = upage; //User virtual address mapeada al frame
     FTE->pte = pte;//pte 
   } 
-  else
-    PANIC("No se encontró una frame table entry");
+  
 
   lock_release (&ftLock);
 }
@@ -179,6 +178,7 @@ evicted_save(struct frame_table_entry* victima){
   //Verdadero si la página es writable. 
   bool is_writable = *(victima->pte) & PTE_W; //PTE_W -> 1 sí es writable, 0 read-only
   vSPTE->is_swap_W = is_writable;
+  //Se invalida el PTE asociado al proceso
   pagedir_clear_page (owner->pagedir, vSPTE->user_vaddr);
 
   return true;
@@ -187,7 +187,7 @@ evicted_save(struct frame_table_entry* victima){
 //Remueve el frame de la lista de frames
 void free_frameTable(void *frame){
   //Se verifica que no se tenga vacía la frame table
-  ASSERT(!list_empty(&frame_table));
+  //ASSERT(!list_empty(&frame_table));
 
   lock_acquire (&ftLock);
   

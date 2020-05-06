@@ -25,7 +25,7 @@ pagedir_create (void)
 }
 
 /* Destroys page directory PD, freeing all the pages it
-   references. */ 
+   references. */
 void
 pagedir_destroy (uint32_t *pd) 
 {

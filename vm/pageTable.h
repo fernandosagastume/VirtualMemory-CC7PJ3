@@ -11,7 +11,7 @@
 
 #define IN_SWAP 1 //La página se encuentra en un swap slot
 #define FROM_EXE 2 ////En un ejecutable
-#define IN_MEMORY 4 //Esta activa en memoria
+#define IN_MEMORY 3 //Esta activa en memoria
 
 /* Supplemental page table element. */
 struct sup_page_table_entry {

@@ -44,11 +44,10 @@ void cond_broadcast (struct condition *, struct lock *);
 
 //Mis funciones 
 //------------------------------------------------------------------------------------------------------------------
-//Funciones utilizadas para ordenar listas
-bool priorityCompareCondvarSemaphore(const struct list_elem *a, const struct list_elem *b,void *aux); 
-bool priorityCompareDonors(const struct list_elem *a, const struct list_elem *b,void *aux); 
-bool priorityCompareWaiters(const struct list_elem *a, const struct list_elem *b,void *aux);
+bool priorityCompareCondvarSemaphore(const struct list_elem *a, const struct list_elem *b,void *aux); /*Función utilizada 
+//para ordenar listas*/
 //------------------------------------------------------------------------------------------------------------------
+
 
 /* Optimization barrier.
 

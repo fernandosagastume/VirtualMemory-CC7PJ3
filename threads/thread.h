@@ -4,6 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
+#include "threads/synch.h"
 #include "lib/kernel/hash.h"
 
 /* States in a thread's life cycle. */
@@ -19,6 +20,9 @@ enum thread_status
    You can redefine this to whatever type you like. */
 typedef int tid_t;
 #define TID_ERROR ((tid_t) -1)          /* Error value for tid_t. */
+/*Memory map identifier type*/
+typedef int mapid_t;
+
 
 /* Thread priorities. */
 #define PRI_MIN 0                       /* Lowest priority. */
@@ -88,18 +92,23 @@ struct thread
     enum thread_status status;          /* Thread state. */
     char name[16];                      /* Name (for debugging purposes). */
     uint8_t *stack;                     /* Saved stack pointer. */
+    int priority;                       /* Priority. "!es igual que base_priority a menos que tenga una donación!" */
+    struct list_elem allelem;           /* List element for all threads list. */
+    /* Shared between thread.c and synch.c. */
+    struct list_elem elem;              /* List element. */
     
-    int priority;                       /* Priority es igual que base_priority a menos que tenga una donación*/
-    //-------------------------------------------------------------------------------------------------------------------//
-    //Mis inicializaciones
+    /*------ Our implementation -------- */    
+    /* For Alarm */    
+    int64_t wake_time_alarm;		/* Time when to wake up blocked thread */
+    struct list_elem sleeping_elem;	/* List element for threads to unblock */
+    /*------ Priority -------------------*/
     int priorityInit;                  /* Se añade una prioridad base que es con la que incia el thread*/
 
     struct list holdingLocks;           /*Una lista de locks que el thread actualmente tiene*/
     struct list donantes;               /*Una lista de a quienes se les dona prioridad*/
     struct list_elem donantesElem;      /*Sirve para iterar en la lista de donantes*/
     struct lock *waitingLock;           /*El lock que esta siendo esperado por el thread para donación*/
-    //-------------------------------------------------------------------------------------------------------------------//
-    
+	
     //-------------------------------------------------------------------------------------------------------------------//
     //Implementaciones para el proyecto 2 
 
@@ -108,28 +117,41 @@ struct thread
     
     //-------------------------------------------------------------------------------------------------------------------//
 
-    //-------------------------------------------------------------------------------------------------------------------//
+
+  /*--- Userprog ---*/
+    struct lock* exitLock;                /* Para proces wait */
+    struct list child_list;               /* lista con los hijos de cada proceso */
+    struct semaphore semaphore_wait;     /*Para poner en espera al proceso padre*/
+    //struct exit_status* exit_status;    /* Exit status current thread */
+    int exit_value;                       /* Exit status current thread */
+    struct list_elem child_elem;
+    
+
+ //-------------------------------------------------------------------------------------------------------------------//
     //Implementaciones para el proyecto 3
 
     /*Campo el cual es usado para asociar una supplemental page table 
       representado como una hash table.*/
     struct hash SPT;
 
-    //-------------------------------------------------------------------------------------------------------------------//
+    //Campos para memory mapping
+    //Contador de memory mapping por proceso
+    mapid_t mmap_counter;
+    //Hash table para llevar control del memory mapping
+    struct hash mmap_files;
+ //-------------------------------------------------------------------------------------------------------------------//
 
-    struct list_elem allelem;           /* List element for all threads list. */
-
-    /* Shared between thread.c and synch.c. */
-    struct list_elem elem;              /* List element. */
 
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
+
 #endif
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
   };
+
 
 /* If false (default), use round-robin scheduler.
    If true, use multi-level feedback queue scheduler.
@@ -152,7 +174,7 @@ struct thread *thread_current (void);
 tid_t thread_tid (void);
 const char *thread_name (void);
 
-void thread_exit (void) NO_RETURN; 
+void thread_exit (void) NO_RETURN;
 void thread_yield (void);
 
 /* Performs some operation on thread t, given auxiliary data AUX. */
@@ -161,16 +183,22 @@ void thread_foreach (thread_action_func *, void *);
 
 int thread_get_priority (void);
 void thread_set_priority (int);
+
 /*------------------------------------------------------------------------*/
 /*Funciones principal para donación de prioridad*/
-void priorityDonation(struct thread* threadholder, int donation); //Implementa donación de priridad
-void shakeUpReadyList(struct thread *thd); ////Función que reordena la ready list en caso de que haya thread holder este en la ready list
-void priorityDonationInverse(struct thread *currT, struct lock *lock); //Devuelve la donación una vez hace release del lock
+void priorityDonation(void); //Implementa donación de priridad
 void checkMaxCurrentT(void); //Función que decide si se hace yield() al CPU
 bool priorityCompareTATB(const struct list_elem *a, const struct list_elem *b,void *aux UNUSED); /*Función utilizada 
 para ordenar listas*/
 
+/* ------ OUR IMPLEMENTATION ----------- */
+bool list_less_comp(const struct list_elem* a,
+        const struct list_elem* b, void* aux);
+
+bool exitStatus_init(struct thread *t, tid_t tid);
+
 /*-------------------------------------------------------------------------*/
+
 int thread_get_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);

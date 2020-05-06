@@ -165,8 +165,9 @@ page_fault (struct intr_frame *f)
 
   //Si la fault address es null pointer, una kernel address, y write violation
   if(fault_addr == NULL || !not_present || !is_user_vaddr(fault_addr) 
-    || (fault_addr < USER_VADDR))
+    || (fault_addr < USER_VADDR)){
     syscall_exit(-1);
+  }
   
   //struct sup_page_table_entry* SPTE = get_SPTE();
 

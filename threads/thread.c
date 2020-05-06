@@ -54,7 +54,7 @@ static long long user_ticks;    /* # of timer ticks in user programs. */
 #define TIME_SLICE 4            /* # of timer ticks to give each thread. */
 static unsigned thread_ticks;   /* # of timer ticks since last yield. */
 
-#define maxDepthLayer 7;         /* Es el maximo depth que se tendra en el test case de priority donate chain*/
+
 
 /* If false (default), use round-robin scheduler.
    If true, use multi-level feedback queue scheduler.
@@ -92,7 +92,7 @@ thread_init (void)
   ASSERT (intr_get_level () == INTR_OFF);
 
   lock_init (&tid_lock);
-  list_init (&ready_list);  
+  list_init (&ready_list);
   list_init (&all_list);
 
   /* Set up a thread structure for the running thread. */
@@ -109,7 +109,11 @@ thread_start (void)
 {
   /* Create the idle thread. */
   struct semaphore idle_started;
+  /*--- Iniciamos el exit status del thread -----*/
+  //exitStatus_init(initial_thread, initial_thread->tid);
+  
   sema_init (&idle_started, 0);
+
   thread_create ("idle", PRI_MIN, idle, &idle_started);
 
   /* Start preemptive thread scheduling. */
@@ -181,10 +185,14 @@ thread_create (const char *name, int priority,
   t = palloc_get_page (PAL_ZERO);
   if (t == NULL)
     return TID_ERROR;
-
+  
+  old_level = intr_disable ();
   /* Initialize thread. */
   init_thread (t, name, priority);
   tid = t->tid = allocate_tid ();
+  /**** Our Implementation *****/
+  //if (!exitStatus_init(t, tid))
+    //return TID_ERROR;
 
   /* Stack frame for kernel_thread(). */
   kf = alloc_frame (t, sizeof *kf);
@@ -204,15 +212,14 @@ thread_create (const char *name, int priority,
   /* Add to run queue. */
   thread_unblock (t);
 
-  //Se deshabilita interrupcciones
-  old_level = intr_disable();
+
 
     //Current running thread
-  struct thread *currentT = thread_current();
+  //struct thread *currentT = thread_current();
   //Compara las prioridades para saber si ceder el CPU al nuevo thread en creación.
-  if (currentT->priority < t->priority){
-      thread_yield();
-  }
+  //if (currentT->priority < t->priority){
+  //    thread_yield();
+  //}
 
   intr_set_level(old_level);
 
@@ -235,6 +242,24 @@ thread_block (void)
   schedule ();
 }
 
+/* Se inicializa el exit_status *//*
+bool exitStatus_init(struct thread *t, tid_t tid)
+{
+  struct exit_status* exs;
+  exs = (struct exit_status*)malloc(sizeof(struct exit_status));
+  if (exs == NULL)
+    return false;
+  t->exit_status = exs;
+  exs->pid = tid;
+  //exs->exit_value = 0;
+  sema_init(&exs->semaphore_wait, 0);
+  exs->exitLock = &thread_current()->exitLock;
+  exs->elem.next = NULL;
+  exs->elem.prev = NULL;
+
+  return true;
+}*/
+
 /* Transitions a blocked thread T to the ready-to-run state.
    This is an error if T is not blocked.  (Use thread_yield() to
    make the running thread ready.)
@@ -244,7 +269,7 @@ thread_block (void)
    it may expect that it can atomically unblock a thread and
    update other data. */
 void
-thread_unblock (struct thread *t) 
+thread_unblock (struct thread *t)
 {
   enum intr_level old_level;
 
@@ -252,9 +277,7 @@ thread_unblock (struct thread *t)
 
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-  //list_push_back (&ready_list, &t->elem);
-  list_insert_ordered(&ready_list,&t->elem,priorityCompareTATB,NULL);/*Inserta en la lista por
-                                                                           orden de prioridad*/
+  list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
   intr_set_level (old_level);
 }
@@ -298,6 +321,7 @@ void
 thread_exit (void) 
 {
   ASSERT (!intr_context ());
+  sema_up(&thread_current()->semaphore_wait);
 
 #ifdef USERPROG
   process_exit ();
@@ -330,19 +354,16 @@ priorityCompareTATB(const struct list_elem *a,const struct list_elem *b,
 /* Yields the CPU.  The current thread is not put to sleep and
    may be scheduled again immediately at the scheduler's whim. */
 void
-thread_yield (void) 
+thread_yield (void)
 {
   struct thread *cur = thread_current ();
-  enum intr_level old_level;  
-  
+  enum intr_level old_level;
+
   ASSERT (!intr_context ());
 
-  old_level = intr_disable ();
-  if (cur != idle_thread) 
-    //list_push_back (&ready_list, &cur->elem);
-    list_insert_ordered(&ready_list,&cur->elem,priorityCompareTATB,NULL);/*Inserta en la lista por
-                                                                           orden de prioridad*/
-    
+    old_level = intr_disable ();
+  if (cur != idle_thread)
+    list_push_back (&ready_list, &cur->elem);
   cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);
@@ -366,61 +387,22 @@ thread_foreach (thread_action_func *func, void *aux)
 }
 
 /* Sets the current thread's priority to NEW_PRIORITY. */
-
 void
-thread_set_priority (int new_priority) 
+thread_set_priority (int new_priority)
 {
-  enum intr_level old_level;
-  old_level = intr_disable();
-  /*
-  Situation 1: Current thread hasn't been donated. So you need to set both old_priority (Add in thread. 
-  It's use to record the original priority) and priority.
-
-  Situation 2: Current thread has been donated. But we need to set priority now. 
-  If the new priority is less than the priority that the thread get by donating. We only need to set old_priority.
-
-  Situation 3: Current thread has been donated. But it will be donated again. We needn't to change old_priority. 
-  */
-  if(list_empty(&thread_current()->donantes)){
-    thread_current ()->priorityInit = new_priority;
-    thread_current ()->priority = new_priority;
-  }
-  //Si es mayor que la nueva prioridad probablemente se tenga una donación
-  else if(thread_current()->priority > new_priority){
-    thread_current ()->priorityInit = new_priority;
-  }
-  else if(thread_current()->priority == thread_current()->priorityInit){
-    thread_current ()->priorityInit = new_priority;
-    thread_current ()->priority = new_priority;
-  }
-
-  checkMaxCurrentT();
-  intr_set_level(old_level);
+  thread_current ()->priority = new_priority;
 }
 
 /* Returns the current thread's priority. */
 int
-thread_get_priority (void) 
+thread_get_priority (void)
 {
-  struct thread *th;
-  /*Primero se verifica si hay donantes, en caso de que si se verifica si la prioridad original es mayor o no 
-    que la del donante con la maxima prioridad*/
-  if(!list_empty(&thread_current()->donantes)){
-      th = list_entry(list_max(&thread_current()->donantes, priorityCompareTATB, NULL), struct thread, donantesElem);
-    if(thread_current()->priorityInit > th->priority){
-      return thread_current ()->priorityInit;
-    }
-    else{
-      return th->priority;
-    }
-  }else {
-  return thread_current ()->priorityInit;
-  }
-    }
+  return thread_current ()->priority;
+}
 
 /* --------------------------------------------------------------------------------------------------- */
 /*Función que decide si se hace yield() al CPU basandose en la ready list y current thread*/
-void
+/*void
 checkMaxCurrentT(void){
 
   if(!(list_empty(&ready_list))){
@@ -428,56 +410,20 @@ checkMaxCurrentT(void){
     int priori = list_entry(list_front(&ready_list),struct thread,elem)->priority; 
     //Prioridad del current running thread
     int curPriori = thread_current()->priority; //
-    /*Se compara la prioridad del current thread con la del primero en la ready list para saber si hacer 
+    //Se compara la prioridad del current thread con la del primero en la ready list para saber si hacer 
     yield del CPU o no*/
-    if(priori > curPriori)
-      thread_yield();
-  }
-}
+    //if(priori > curPriori)
+      //thread_yield();
+//  }
+//}
 
-/*Implementa donación de prioridad*/
+/*Implementa priority scheduling y donación de prioridad*/
 void
-priorityDonation (struct thread *threadholder, int donation) 
+priorityDonation (void) 
 {
-    if(!(donation <= threadholder->priority))
-      threadholder->priority = donation;
-    else
-      return;
-
-    enum intr_level old_level = intr_disable();
-    //Se agrega en la lista de donantes del holder el current thread
-    list_insert_ordered(&threadholder->donantes, 
-                        &thread_current()->donantesElem, priorityCompareDonors, NULL);
-    intr_set_level(old_level);
-      
-      shakeUpReadyList(threadholder);
-
-      //Se verifica si se debe hacer donacion
-    //struct lock *l = threadholder->waitingLock;
-    //Se verifica en caso de que se pueda hacer nested donation
-    /*if(l != NULL){
-      struct thread *holderN = l->holder; //Se prepara el thread para donarle
-      priorityDonation(holderN, donation); //Se dona al holder
-    }*/
-}
-
-//Devuelve la donación una vez hace release del lock
-void priorityDonationInverse(struct thread *currT, struct lock *lock){
-  list_remove(&lock->lock_elemen); //Se elimina el lock de la lista de holdingLocks
-
-  currT->priority = currT->priorityInit;//Se regresa la prioridad real del thread  
-
-}
-//Función que reordena la ready list en caso de que haya lock holder este en la ready list
-void 
-shakeUpReadyList(struct thread *thd){
-  if(thd->status == THREAD_READY){
-  list_remove(&thd->elem);
-  enum intr_level old_level = intr_disable();
-  list_insert_ordered(&ready_list, 
-                        &thd->elem, priorityCompareTATB, NULL);
-  intr_set_level(old_level);
-  }
+  //struct thread *thactual = thread_current();
+  //struct lock *lck = thactual->waitingLock;
+  return;
 }
 /* --------------------------------------------------------------------------------------------------- */
 
@@ -598,25 +544,34 @@ init_thread (struct thread *t, const char *name, int priority)
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
+
   /* Nuevos campos para Priority Donation*/
   //--------------------------------------
   t->priorityInit = priority;
   list_init(&t->holdingLocks);
   t->waitingLock = NULL;
   list_init(&t->donantes);
+  //---------------------------------------
+  /* Wait Process proyecto 2*/
+  lock_init(&t->exitLock);
+  //list_init(&t->childExitStatus);
+
   //--------------------------------------- 
   /*Inicialización de campos del proyecto 2*/
   //--------------------------------------------
    t->fdSZ = 2; //Se inicializa en STDERR, 0 es para STDIN y 1 para STDOUT
    list_init(&t->fdList); //Lista donde se guardan los file descriptors del thread actual
+   t->exit_value = -1; // El exit value del thread actual
+   sema_init(&t->semaphore_wait, 0); //Semaforo para los procesos padre
+   list_init(&t->child_list); //Lista de los procesos hijo
 
   //--------------------------------------------
+
   t->magic = THREAD_MAGIC;
 
   old_level = intr_disable ();
   list_push_back (&all_list, &t->allelem);
   intr_set_level (old_level);
-
 }
 
 /* Allocates a SIZE-byte frame at the top of thread T's stack and
