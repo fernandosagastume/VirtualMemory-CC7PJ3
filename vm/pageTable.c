@@ -114,7 +114,7 @@ bool load_from_swap_SPTE(struct sup_page_table_entry* SPTE){
   en un momento dado en el run time.*/
 bool load_from_file_SPTE(struct sup_page_table_entry* SPTE){
 
-  //Sete la posición del archivo en el offset dado.
+  //Setea la posición del archivo en el offset dado.
   file_seek(SPTE->exe, SPTE->file_offset);
   //Se obtiene una nueva página y se guarda en la frame table
   void* buffer = get_pageFT(PAL_USER);
@@ -144,6 +144,38 @@ bool load_from_file_SPTE(struct sup_page_table_entry* SPTE){
   return true;
 }
 
+bool load_from_MMAP_file_SPTE(struct sup_page_table_entry* SPTE){
+  //Setea la posición del archivo en el offset dado.
+  //file_seek(SPTE->exe, SPTE->file_offset);
+  //printf(" ofs -> %d\n", SPTE->file_offset);
+  //Se obtiene una nueva página y se guarda en la frame table
+  void* buffer = get_pageFT(PAL_USER);
+
+  if(!buffer)
+    return false;
+
+  uint32_t bytes_read = file_read(SPTE->exe, buffer, SPTE->file_read_bytes);
+    /*Si el tamaño del exe no es igual al que se tiene guardado en el SPTE, 
+      se devuelve falso y se libera la página obtenida al principio*/
+    if(bytes_read != SPTE->file_read_bytes){
+      free_frameTable(buffer);
+      return false;
+    }
+
+    memset (buffer + SPTE->file_read_bytes, 0, PGSIZE - SPTE->file_read_bytes);
+
+    /*Añade una nueva pagina al address space del proceso*/
+      if (!install_page (SPTE->user_vaddr, buffer, true)) 
+        {
+          free_frameTable(buffer);
+          return false; 
+        }
+  //Si se llega a este punto la página ya esta loaded
+  SPTE->page_loaded = true;
+
+  return true;
+}
+
 bool add_EXE_to_SPTE (struct file *file, off_t ofs, void* upage,
                       uint32_t read_bytes, uint32_t zero_bytes,
                       bool writable){
@@ -159,7 +191,37 @@ bool add_EXE_to_SPTE (struct file *file, off_t ofs, void* upage,
     SPTE->file_read_bytes = read_bytes;
     SPTE->file_zero_bytes = zero_bytes;
     SPTE->file_writable = writable;
+    SPTE->page_loaded = false;
     SPTE->status = FROM_EXE;
+
+  }
+  else
+    return false;
+
+  struct hash_elem* he;
+  //Se inserta el entry en la supplemental page table del thread actual
+  he = hash_insert(&thread_current()->SPT, &SPTE->spte_elem);
+
+  if( he)
+    return false;
+
+  return true;
+}
+
+bool add_MMAP_EXE_to_SPTE (struct file *file, off_t ofs, void* upage,
+                      uint32_t read_bytes){
+  struct sup_page_table_entry* SPTE;
+  //Se crea una sup page entry para la dirección de memoria upage
+  SPTE = malloc(sizeof(struct  sup_page_table_entry));
+  //Se agrega la información dada en la SPTE
+  if(SPTE){
+    SPTE->user_vaddr = upage;
+    SPTE->exe = file;
+    SPTE->file_offset = ofs;
+    SPTE->file_read_bytes = read_bytes;
+    SPTE->page_loaded = false;
+    SPTE->status = MMAP;
+
   }
   else
     return false;
@@ -169,9 +231,9 @@ bool add_EXE_to_SPTE (struct file *file, off_t ofs, void* upage,
   he = hash_insert(&thread_current()->SPT, &SPTE->spte_elem);
 
   if(he)
-    return true;
-  else
     return false;
+
+  return true;
 }
 
 /* Adds a mapping from user virtual address UPAGE to kernel

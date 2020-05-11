@@ -185,6 +185,8 @@ page_fault (struct intr_frame *f)
           success = load_from_swap_SPTE(SPTE);
         else if(SPTE->status == FROM_EXE)
           success = load_from_file_SPTE(SPTE);
+        else if (SPTE->status == MMAP)
+          success = load_from_MMAP_file_SPTE(SPTE);
       }
     }
     //Se verifica que el fault address este en user space

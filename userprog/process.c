@@ -24,6 +24,7 @@
 #include "vm/frameTable.h"
 #include "vm/pageTable.h"
 #include "lib/kernel/hash.h"
+#include "userprog/mmap.h"
 
 
 //Variable utilizada guardar el tid que se desea buscar en la función search_TID();
@@ -105,6 +106,8 @@ start_process (void *file_name_)
   struct thread* curr = thread_current();
   //Se incializa la hash table con la supplemental page table de cada proceso
   hash_init (&curr->SPT, SPTE_hash, SPTE_less, NULL);
+  //Se incializa la hash table con la supplemental page table de cada proceso
+  hash_init (&curr->mmap_files, mmap_file_hash, mmap_file_less, NULL);
 
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
@@ -116,7 +119,6 @@ start_process (void *file_name_)
   /* If load failed, quit. */
   palloc_free_page (file_name);
   if (!success) {
-    printf("AQUI ENTRE\n");
     thread_exit ();
   }
 
@@ -145,9 +147,9 @@ process_wait (tid_t child_tid)
   /********** Our Implementation ***********/
   
   int exit_curr = thread_current()->exit_value;
- 
+
+  //Si no hay nada en la lista, este proceso no tiene hijos.
   if(list_empty(&thread_current()->child_list)){
-    //printf("LLEGUE AQUI LIST EMPTY\n");
     return -1;
   }
 
@@ -161,11 +163,12 @@ process_wait (tid_t child_tid)
      struct thread * trd = list_entry (iter_, struct thread, child_elem);
       if (trd->tid == child_tid)
       {
-        //Se enecontró el hijo 
+        //Se enecontró un direct child del proceso 
         child = trd;
         break;
       }
   }
+
 
   if(!child){
     //printf("LLEGUE AQUI CHILD NULL\n");
@@ -194,6 +197,9 @@ process_exit (void)
   /*Cuando un proceso hace exit, el thread actual debe de destruir
     su Supplemental Page Table*/
   destroy_SPT(&cur->SPT);
+
+  //destroy_mmap_files(&cur->mmap_files);
+
 
   //Process termination message
   printf ("%s: exit(%d)\n", cur->name, cur->exit_value);
@@ -569,6 +575,7 @@ lazy_loading (struct file *file, off_t ofs, void* upage,
 
       read_bytes -= page_read_bytes;
       zero_bytes -= page_zero_bytes;
+      ofs += page_read_bytes;
       upage += PGSIZE;
     }
   return true;

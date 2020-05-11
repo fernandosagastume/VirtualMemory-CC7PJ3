@@ -11,7 +11,7 @@
 
 #define IN_SWAP 1 //La página se encuentra en un swap slot
 #define FROM_EXE 2 ////En un ejecutable
-#define IN_MEMORY 3 //Esta activa en memoria
+#define MMAP 3 //Esta activa en memoria
 
 /* Supplemental page table element. */
 struct sup_page_table_entry {
@@ -81,11 +81,16 @@ bool load_from_swap_SPTE(struct sup_page_table_entry* SPTE);
   en un momento dado en el run time.*/
 bool load_from_file_SPTE(struct sup_page_table_entry* SPTE);
 
+bool load_from_MMAP_file_SPTE(struct sup_page_table_entry* SPTE);
+
 /*Se guardan los datos de un exe o un archivo en la SPTE y luego
  se guarda en la supplemental page table del proceso asociado*/ 
 bool add_EXE_to_SPTE (struct file *file, off_t ofs, void* upage,
                       uint32_t read_bytes, uint32_t zero_bytes,
                       bool writable);
+
+bool add_MMAP_EXE_to_SPTE (struct file *file, off_t ofs, void* upage,
+                      uint32_t read_bytes);
 //----------------------------------------------------------------------
 
 #endif /* vm/pageTable.h */
