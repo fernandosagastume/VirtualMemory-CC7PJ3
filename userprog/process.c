@@ -106,7 +106,7 @@ start_process (void *file_name_)
   struct thread* curr = thread_current();
   //Se incializa la hash table con la supplemental page table de cada proceso
   hash_init (&curr->SPT, SPTE_hash, SPTE_less, NULL);
-  //Se incializa la hash table con la supplemental page table de cada proceso
+  //Se incializa la hash table con los mmap files de cada proceso
   hash_init (&curr->mmap_files, mmap_file_hash, mmap_file_less, NULL);
 
   /* Initialize interrupt frame and load executable. */

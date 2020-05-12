@@ -4,8 +4,6 @@ Cambios PJ3 - CC7:
 	
 * Se agregó una constante ----> #define USER_VADDR ((void *) 0x08048000), indica el bottom user valid address. Definida en userprog/exception.h
 
-* Se agregó una constante ----> #define LIM_STACK ((void *) 0x40000000), indica el stack limit address. Definida en userprog/exception.h
-
 * Se modificó la función void page_fault() en el archivo userprog/exception.c, se manejaron los casos mencionados en la pintos guide, los cuales son si la fault address es null pointer, una kernel address, y write violation entonces eso provoca que sea una dirección invalida, lo cual debe por consecuencia provocar un syscall_exit(-1). Además se llevan a cabo verificaciones en caso de que sea necesario hacer crecer el stack. Por último se agregó la función install_page().
 
 * Se agregó en threads/init.c, la incialización de la struct list frame_table y otras estructuras definidas en vm/frameTable.h (La funcion es init_frameTable() definida en vm/frameTable.h).
@@ -113,6 +111,23 @@ Cambios PJ3 - CC7:
 
 * Se agregó en el archivo "userprog/exception.c" los casos para reclamation que basicamente es que si una página se detecta que no está cargada, entonces habría que cargarla por medio de la función load_from_swap_SPTE() que va y trae el faul frame en caso de que estuviera albergado en el SWAP.
 
+* Se agregaron las siguiente funciones para llevar a cabo el proceso de reclamation:
+
+	/*Funciones que se usan para cargar datos de una página en 
+	su SPTE, usado para el proceso de reclamation.*/
+
+	/*Se carga la información que se guardo en el swap por eviction*/
+	- bool load_from_swap_SPTE(struct sup_page_table_entry* SPTE);
+
+
+	/*Basicamente lo que se hace en esta función es lo que ya se hacia
+	  en la función de load_segment() pero que dado a que ahora todo se 
+	  hace con lazy loading, ahora solo se carga lo que se este requiriendo
+	  en un momento dado en el run time.*/
+	- bool load_from_file_SPTE(struct sup_page_table_entry* SPTE);
+	/*Lo mismo que la de arriba, solo que con mmap files*/
+	- bool load_from_MMAP_file_SPTE(struct sup_page_table_entry* SPTE);
+
 //--------------------------------------------- Reclamation ---------------------------------------------//
 
 //--------------------------------------------- Lazy Loading --------------------------------------------//
@@ -121,9 +136,72 @@ Cambios PJ3 - CC7:
 
 * Se agregó y se definió la función add_EXE_to_SPTE(); en el archivo vm/pageTable.h y vm/pageTable.c, la cual se encarga de guardar los datos de un exe o un archivo en la SPTE y luego guardar esa SPTE en la supplemental page table del proceso asociado. Además se agregaron nuevos campos al struct sup_page_table_entry en vm/pageTable.h, donde se guardan la información del archivo. 
 
+* Se agregó y se definió la función add_MMAP_EXE_to_SPTE() en el archivo vm/pageTable.h y vm/pageTable.c, que hace lo mismo que la función add_EXE_to_SPTE() solo que ahora no se tienen los parametros zero_bytes y writable.
+
 * Ahora como los archivos se cargan uno a uno, todo se maneja con reclamation, ya que cuando se va necesitando un archivo en run time, se hace el proceso de reclamation y se busca el archivo en la Supplemental Page Table y se carga. Todo lo anterior se hace en la función en el archivo "vm/pageTable.c"
 con el nombre de load_from_file_SPTE().
 
 //--------------------------------------------- Lazy Loading --------------------------------------------//
 
+//--------------------------------------------- MMAP Files ----------------------------------------------//
+
+**syscall_mmap**
+
+* Se creo un nuevo archivo llamado userprog/mmap.h, el cual contiene la definición de un struct llamado mmap_info, el cual es para asociar un map id con una región en la memoria y un archivo cuando se de el proceso de mapping. La lógica de los memory map files es mapear un archivo con una región de memoria, esto para que luego cuando se den accesos en memoria en esa región, ya se sabe que pertenece a donde está ese "archivo". Entonces syscall_mmap se encarga de mapear un archivo completo a páginas virtuales consecutivas que comienzan en base_address. Los campos de ese struct se ven de la siguiente manera: 
+	
+	- mapid_t mapid; /*map id.*/
+    - struct file* exe; /*El archivo*/
+    - void* base_addr; /*La dirección inicio del memory mapping*/
+    - size_t page_count; /*Cuenta cuantas páginas han sido mapeadas*/
+  	- struct hash_elem mmap_elem;
+
+* Se creo un nuevo campo en struct thread, llamado struct hash mmap_files, que es una hash table la cual alberga todos los memory mapped files. También se definió typedef int mapid_t; para que cada memory mapped file tenga un identificador único. También se creo un campo llamado mapid_t mmap_counter que se usa para asignar el id a cada memory mapped file. El campo mmap_counter solamente se utiliza cuando se inserta un nuevo mmap_elem en la hash table de mmap_files de cada proceso. 
+
+* La hash table mmap_files del cada proceso se define en userprog/process.c dentro de la función start_process(). También en el mismo archivo en process_exit() se destruye la misma hash table.
+
+* Se crearon la siguientes funciones incializadas en userprog/mmap.h y definidas en userprog/syscall.c:
+//-----------------------------------------------------------------------------------------------------
+	/*Funciones utilizadas y requeridas para incializar el hash table que 
+	  alberga la suplemetal page table de cada thread*/
+
+/* Computes and returns the hash value for hash element E, given	
+   auxiliary data AUX. */
+	- unsigned mmap_file_hash (const struct hash_elem* e, void* aux);
+
+/* Compares the value of two hash elements A and B, given
+   auxiliary data AUX.  Returns true if A is less than B, or
+   false if A is greater than or equal to B. */
+   - bool mmap_file_less (const struct hash_elem* a, 
+					 const struct hash_elem* b, 
+					 void* aux);
+//-----------------------------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------------------------------
+
+	/*Funciones utilizadas para insertar y eliminar los mmap files en el hash table mmap_files de cada
+	  proceso*/
+
+/*Inserta información en la hash table de mmap files de cada proceso como
+también en la supplemental page table*/
+- mapid_t insert_mmap_file (void* addr, struct file* exe, int32_t length);
+
+/*Remueve información en la hash table de mmap files del mapid correspondiente 
+de cada proceso como también en la supplemental page table*/
+- void remove_mmap_file(mapid_t mapid);
+
+/*Función destructrora cuando se desea destruir un elemento
+  de la hash table dada*/
+- void mmap_destructor_func (struct hash_elem* e, void* aux);
+
+/*Se destruye la hash table con los mmap files*/
+- void destroy_mmap_files (struct hash* h);
+
+/*Destruye absolutamente todo incluyendo supplemental page table*/
+- void mmap_files_totally_destroy(struct mmap_info* mmap_info_);
+
+//-----------------------------------------------------------------------------------------------------
+
+* Se definió la función syscall_munmap() en userprog/syscall.c, y lo que hace es liberar la memoria en la región de memoria del los mmap files y comprobar si las páginas correspondientes están sucias, si están sucias, el contenido de la página debe volver a escribirse en el archivo. De lo contrario, simplemente se liberan las páginas. Toda esta lógica se hace por medio de la función void remove_mmap_file(mapid_t mapid) (Aún no funciona, aunque la lógica con la que esta hecho es así).
+
+//--------------------------------------------- MMAP Files ----------------------------------------------//
 

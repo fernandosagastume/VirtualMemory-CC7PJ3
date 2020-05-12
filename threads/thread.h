@@ -135,7 +135,8 @@ struct thread
     struct hash SPT;
 
     //Campos para memory mapping
-    //Contador de memory mapping por proceso
+    /*Contador de memory mapping por proceso (Usado para asignar a cada mmap file 
+      un id único)*/
     mapid_t mmap_counter;
     //Hash table para llevar control del memory mapping
     struct hash mmap_files;

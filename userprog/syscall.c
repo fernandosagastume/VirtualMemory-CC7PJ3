@@ -780,6 +780,7 @@ void destroy_mmap_files (struct hash* h){
 
 mapid_t syscall_mmap (int fd, void *addr)
 {
+
   struct thread* curr = thread_current();
 
   /*A call to mmap may fail if the file open as fd has a length of zero bytes. 
@@ -787,25 +788,28 @@ mapid_t syscall_mmap (int fd, void *addr)
   any existing set of mapped pages, including the stack or pages mapped at executable load time. 
   It must also fail if addr is 0, because some Pintos code assumes virtual page 0 is not mapped.
   Finally, file descriptors 0 and 1, representing console input and output, are not mappable.*/
-  if (addr == NULL || addr == 0 || pg_ofs(addr) != 0 || 
-  	  fd == 0 || fd == 1){
+  if (addr == NULL || addr == 0 || pg_ofs(addr) != 0){
     return -1;
   }
+
+  if(fd == 0 || fd == 1)
+  	return -1;
   	
 	struct fileDescriptor* fd_t = NULL;
   	//List elem para iterar en la lista
 	struct list_elem* iter_;
-	for (iter_ = list_front(&curr->fdList); iter_ != NULL; iter_ = iter_->next){
-		//Se verifica que el file descriptor esta abierto y el dueño es el thread actual
-	    struct fileDescriptor* fdstr = list_entry(iter_, struct fileDescriptor, felem);
-	    int fdCT = fdstr->fileDescriptor;
-	    //Se encontró una ocurrencia
-	    if (fdCT == fd) {
-	    	fd_t = fdstr;
-	        break;
-      	}
+	if(!list_empty(&curr->fdList)){
+		for (iter_ = list_front(&curr->fdList); iter_ != NULL; iter_ = iter_->next){
+			//Se verifica que el file descriptor esta abierto y el dueño es el thread actual
+		    struct fileDescriptor* fdstr = list_entry(iter_, struct fileDescriptor, felem);
+		    int fdCT = fdstr->fileDescriptor;
+		    //Se encontró una ocurrencia
+		    if (fdCT == fd) {
+		    	fd_t = fdstr;
+		        break;
+	      	}
+	  	}
   	}
-
   //No se encontró el file descriptor
   if (!fd_t)
     return -1;
