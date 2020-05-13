@@ -234,6 +234,9 @@ syscall_handler (struct intr_frame *f UNUSED) {
 			if (!physPage)
 	          	syscall_exit(-1);
 
+	        if(!valid_upointer((const char*)argSt[0]))
+				syscall_exit(-1);
+
 	        argSt[0] = (int)physPage;
 
 	        f->eax = syscall_open((const char*)argSt[0]);
@@ -355,8 +358,8 @@ pid_t syscall_exec(const char *cmd_line)
 		return -1;
 	}
 
-	if(!valid_upointer(cmd_line))
-		syscall_exit(-1);
+		if(!valid_upointer(cmd_line))
+			syscall_exit(-1);
 
 	lock_acquire(&lockFS);
 	pid_t cpid = process_execute(cmd_line);
@@ -400,6 +403,7 @@ syscall_remove(const char* file){
 int 
 syscall_open(const char* file){
 
+	
 	lock_acquire(&lockFS);
 	int fileDescriptor;
 	struct file* file_ = filesys_open(file);
@@ -458,6 +462,9 @@ syscall_filesize(int fd){
 
 int 
 syscall_read(int fd, void* buffer, unsigned size){
+
+	
+
 	//-1 en caso de que no se pueda leer el file
 	int bytes_to_read = 0;
 	lock_acquire(&lockFS);
