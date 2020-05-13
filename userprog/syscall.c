@@ -234,9 +234,6 @@ syscall_handler (struct intr_frame *f UNUSED) {
 			if (!physPage)
 	          	syscall_exit(-1);
 
-	        if(!valid_upointer((const char*)argSt[0]))
-				syscall_exit(-1);
-
 	        argSt[0] = (int)physPage;
 
 	        f->eax = syscall_open((const char*)argSt[0]);
@@ -865,6 +862,6 @@ mapid_t syscall_mmap (int fd, void *addr)
 void syscall_munmap(mapid_t mapid){
 	//Remueve el mmap con ese mapid asociado y destruye toda
 	//la información disponible en el
-	//remove_mmap_file(mapid);
+	remove_mmap_file(mapid);
 	return;
 }
