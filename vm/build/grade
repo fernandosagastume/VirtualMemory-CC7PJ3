@@ -1,0 +1,1652 @@
+warning: test tests/userprog/exec-bound-3 doesn't count for grading
+warning: test tests/userprog/exec-bound-2 doesn't count for grading
+warning: test tests/userprog/exec-bound doesn't count for grading
+warning: test tests/userprog/sc-boundary-3 doesn't count for grading
+TOTAL TESTING SCORE: 63.7%
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+SUMMARY BY TEST SET
+
+Test Set                                      Pts Max  % Ttl  % Max
+--------------------------------------------- --- --- ------ ------
+tests/vm/Rubric.functionality                  27/ 55  24.5%/ 50.0%
+tests/vm/Rubric.robustness                     23/ 28  12.3%/ 15.0%
+tests/userprog/Rubric.functionality            84/108   7.8%/ 10.0%
+tests/userprog/Rubric.robustness               78/ 88   4.4%/  5.0%
+tests/filesys/base/Rubric                      22/ 30  14.7%/ 20.0%
+--------------------------------------------- --- --- ------ ------
+Total                                                  63.7%/100.0%
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+SUMMARY OF INDIVIDUAL TESTS
+
+Functionality of virtual memory subsystem (tests/vm/Rubric.functionality):
+	- Test stack growth.
+	     3/ 3 tests/vm/pt-grow-stack
+	  ** 0/ 3 tests/vm/pt-grow-stk-sc
+	     3/ 3 tests/vm/pt-big-stk-obj
+	     3/ 3 tests/vm/pt-grow-pusha
+
+	- Test paging behavior.
+	  ** 0/ 3 tests/vm/page-linear
+	  ** 0/ 3 tests/vm/page-parallel
+	     3/ 3 tests/vm/page-shuffle
+	  ** 0/ 4 tests/vm/page-merge-seq
+	  ** 0/ 4 tests/vm/page-merge-par
+	  ** 0/ 4 tests/vm/page-merge-mm
+	  ** 0/ 4 tests/vm/page-merge-stk
+
+	- Test "mmap" system call.
+	     2/ 2 tests/vm/mmap-read
+	  ** 0/ 2 tests/vm/mmap-write
+	     2/ 2 tests/vm/mmap-shuffle
+
+	     2/ 2 tests/vm/mmap-twice
+
+	     2/ 2 tests/vm/mmap-unmap
+	  ** 0/ 1 tests/vm/mmap-exit
+
+	     3/ 3 tests/vm/mmap-clean
+
+	     2/ 2 tests/vm/mmap-close
+	     2/ 2 tests/vm/mmap-remove
+
+	- Section summary.
+	     11/ 20 tests passed
+	     27/ 55 points subtotal
+
+Robustness of virtual memory subsystem (tests/vm/Rubric.robustness):
+	- Test robustness of page table support.
+	     2/ 2 tests/vm/pt-bad-addr
+	     3/ 3 tests/vm/pt-bad-read
+	  ** 0/ 2 tests/vm/pt-write-code
+	  ** 0/ 3 tests/vm/pt-write-code2
+	     4/ 4 tests/vm/pt-grow-bad
+
+	- Test robustness of "mmap" system call.
+	     1/ 1 tests/vm/mmap-bad-fd
+	     1/ 1 tests/vm/mmap-inherit
+	     1/ 1 tests/vm/mmap-null
+	     1/ 1 tests/vm/mmap-zero
+
+	     2/ 2 tests/vm/mmap-misalign
+
+	     2/ 2 tests/vm/mmap-over-code
+	     2/ 2 tests/vm/mmap-over-data
+	     2/ 2 tests/vm/mmap-over-stk
+	     2/ 2 tests/vm/mmap-overlap
+
+
+	- Section summary.
+	     12/ 14 tests passed
+	     23/ 28 points subtotal
+
+Functionality of system calls (tests/userprog/Rubric.functionality):
+	- Test argument passing on Pintos command line.
+	     3/ 3 tests/userprog/args-none
+	     3/ 3 tests/userprog/args-single
+	     3/ 3 tests/userprog/args-multiple
+	     3/ 3 tests/userprog/args-many
+	     3/ 3 tests/userprog/args-dbl-space
+
+	- Test "create" system call.
+	     3/ 3 tests/userprog/create-empty
+	     3/ 3 tests/userprog/create-long
+	     3/ 3 tests/userprog/create-normal
+	     3/ 3 tests/userprog/create-exists
+
+	- Test "open" system call.
+	     3/ 3 tests/userprog/open-missing
+	     3/ 3 tests/userprog/open-normal
+	     3/ 3 tests/userprog/open-twice
+
+	- Test "read" system call.
+	     3/ 3 tests/userprog/read-normal
+	     3/ 3 tests/userprog/read-zero
+
+	- Test "write" system call.
+	     3/ 3 tests/userprog/write-normal
+	     3/ 3 tests/userprog/write-zero
+
+	- Test "close" system call.
+	     3/ 3 tests/userprog/close-normal
+
+	- Test "exec" system call.
+	     5/ 5 tests/userprog/exec-once
+	     5/ 5 tests/userprog/exec-multiple
+	     5/ 5 tests/userprog/exec-arg
+
+	- Test "wait" system call.
+	     5/ 5 tests/userprog/wait-simple
+	     5/ 5 tests/userprog/wait-twice
+
+	- Test "exit" system call.
+	     5/ 5 tests/userprog/exit
+
+	- Test "halt" system call.
+	     3/ 3 tests/userprog/halt
+
+	- Test recursive execution of user programs.
+	  ** 0/15 tests/userprog/multi-recurse
+
+	- Test read-only executable feature.
+	  ** 0/ 3 tests/userprog/rox-simple
+	  ** 0/ 3 tests/userprog/rox-child
+	  ** 0/ 3 tests/userprog/rox-multichild
+
+	- Section summary.
+	     24/ 28 tests passed
+	     84/108 points subtotal
+
+Robustness of system calls (tests/userprog/Rubric.robustness):
+	- Test robustness of file descriptor handling.
+	     2/ 2 tests/userprog/close-stdin
+	     2/ 2 tests/userprog/close-stdout
+	     2/ 2 tests/userprog/close-bad-fd
+	     2/ 2 tests/userprog/close-twice
+	     2/ 2 tests/userprog/read-bad-fd
+	     2/ 2 tests/userprog/read-stdout
+	     2/ 2 tests/userprog/write-bad-fd
+	     2/ 2 tests/userprog/write-stdin
+	  ** 0/ 2 tests/userprog/multi-child-fd
+
+	- Test robustness of pointer handling.
+	     3/ 3 tests/userprog/create-bad-ptr
+	     3/ 3 tests/userprog/exec-bad-ptr
+	     3/ 3 tests/userprog/open-bad-ptr
+	  ** 0/ 3 tests/userprog/read-bad-ptr
+	     3/ 3 tests/userprog/write-bad-ptr
+
+	- Test robustness of buffer copying across page boundaries.
+	     3/ 3 tests/userprog/create-bound
+	     3/ 3 tests/userprog/open-boundary
+	     3/ 3 tests/userprog/read-boundary
+	     3/ 3 tests/userprog/write-boundary
+
+	- Test handling of null pointer and empty strings.
+	     2/ 2 tests/userprog/create-null
+	     2/ 2 tests/userprog/open-null
+	     2/ 2 tests/userprog/open-empty
+
+	- Test robustness of system call implementation.
+	     3/ 3 tests/userprog/sc-bad-arg
+	     3/ 3 tests/userprog/sc-bad-sp
+	     5/ 5 tests/userprog/sc-boundary
+	     5/ 5 tests/userprog/sc-boundary-2
+
+	- Test robustness of "exec" and "wait" system calls.
+	  ** 0/ 5 tests/userprog/exec-missing
+	     5/ 5 tests/userprog/wait-bad-pid
+	     5/ 5 tests/userprog/wait-killed
+
+	- Test robustness of exception handling.
+	     1/ 1 tests/userprog/bad-read
+	     1/ 1 tests/userprog/bad-write
+	     1/ 1 tests/userprog/bad-jump
+	     1/ 1 tests/userprog/bad-read2
+	     1/ 1 tests/userprog/bad-write2
+	     1/ 1 tests/userprog/bad-jump2
+
+	- Section summary.
+	     31/ 34 tests passed
+	     78/ 88 points subtotal
+
+Functionality of base file system (tests/filesys/base/Rubric):
+	- Test basic support for small files.
+	     1/ 1 tests/filesys/base/sm-create
+	     2/ 2 tests/filesys/base/sm-full
+	     2/ 2 tests/filesys/base/sm-random
+	     2/ 2 tests/filesys/base/sm-seq-block
+	     3/ 3 tests/filesys/base/sm-seq-random
+
+	- Test basic support for large files.
+	     1/ 1 tests/filesys/base/lg-create
+	     2/ 2 tests/filesys/base/lg-full
+	     2/ 2 tests/filesys/base/lg-random
+	     2/ 2 tests/filesys/base/lg-seq-block
+	     3/ 3 tests/filesys/base/lg-seq-random
+
+	- Test synchronized multiprogram access to files.
+	  ** 0/ 4 tests/filesys/base/syn-read
+	  ** 0/ 4 tests/filesys/base/syn-write
+	     2/ 2 tests/filesys/base/syn-remove
+
+	- Section summary.
+	     11/ 13 tests passed
+	     22/ 30 points subtotal
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/vm/pt-grow-stk-sc FAILURE:
+
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (pt-grow-stk-sc) begin
+  (pt-grow-stk-sc) create "sample.txt"
+  (pt-grow-stk-sc) open "sample.txt"
+  (pt-grow-stk-sc) write "sample.txt"
+  (pt-grow-stk-sc) 2nd open "sample.txt"
+  (pt-grow-stk-sc) read "sample.txt"
+  (pt-grow-stk-sc) compare written data against read data
+  (pt-grow-stk-sc) end
+Differences in `diff -u' format:
+  (pt-grow-stk-sc) begin
+  (pt-grow-stk-sc) create "sample.txt"
+  (pt-grow-stk-sc) open "sample.txt"
+  (pt-grow-stk-sc) write "sample.txt"
+  (pt-grow-stk-sc) 2nd open "sample.txt"
+  (pt-grow-stk-sc) read "sample.txt"
+- (pt-grow-stk-sc) compare written data against read data
+- (pt-grow-stk-sc) end
+
+(Process exit codes are excluded for matching purposes.)
+
+OUTPUT FROM tests/vm/pt-grow-stk-sc:
+
+Copying tests/vm/pt-grow-stk-sc to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/H1241IFn3q.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run pt-grow-stk-sc
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  111,206,400 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 659 sectors (329 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'pt-grow-stk-sc' into the file system...
+Erasing ustar archive...
+Executing 'pt-grow-stk-sc':
+(pt-grow-stk-sc) begin
+(pt-grow-stk-sc) create "sample.txt"
+(pt-grow-stk-sc) open "sample.txt"
+(pt-grow-stk-sc) write "sample.txt"
+(pt-grow-stk-sc) 2nd open "sample.txt"
+(pt-grow-stk-sc) read "sample.txt"
+pt-grow-stk-sc: exit(-1)
+Execution of 'pt-grow-stk-sc' complete.
+Timer: 91 ticks
+Thread: 30 idle ticks, 57 kernel ticks, 4 user ticks
+hda2 (filesys): 672 reads, 1330 writes
+hda3 (scratch): 658 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1181 characters output
+Keyboard: 0 keys pressed
+Exception: 2 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/vm/page-linear FAILURE:
+
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (page-linear) begin
+  (page-linear) initialize
+  (page-linear) read pass
+  (page-linear) read/modify/write pass one
+  (page-linear) read/modify/write pass two
+  (page-linear) read pass
+  (page-linear) end
+Differences in `diff -u' format:
+- (page-linear) begin
+- (page-linear) initialize
+- (page-linear) read pass
+- (page-linear) read/modify/write pass one
+- (page-linear) read/modify/write pass two
+- (page-linear) read pass
+- (page-linear) end
+
+(Process exit codes are excluded for matching purposes.)
+
+OUTPUT FROM tests/vm/page-linear:
+
+Copying tests/vm/page-linear to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/R9bst0qOUk.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run page-linear
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  111,206,400 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 660 sectors (330 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'page-linear' into the file system...
+Erasing ustar archive...
+Executing 'page-linear':
+page-linear: exit(-1)
+Execution of 'page-linear' complete.
+Timer: 92 ticks
+Thread: 30 idle ticks, 57 kernel ticks, 5 user ticks
+hda2 (filesys): 641 reads, 1324 writes
+hda3 (scratch): 659 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 961 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/vm/page-parallel FAILURE:
+
+run: wait for child 0: FAILED
+
+OUTPUT FROM tests/vm/page-parallel:
+
+Copying tests/vm/page-parallel to scratch partition...
+Copying tests/vm/child-linear to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/HglwdMhlRb.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run page-parallel
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 1,313 sectors (656 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'page-parallel' into the file system...
+Putting 'child-linear' into the file system...
+Erasing ustar archive...
+Executing 'page-parallel':
+(page-parallel) begin
+(page-parallel) exec "child-linear"
+(page-parallel) exec "child-linear"
+(page-parallel) exec "child-linear"
+(page-parallel) exec "child-linear"
+(page-parallel) wait for child 0
+child-linear: exit(-1)
+(page-parallel) wait for child 0: FAILED
+page-parallel: exit(1)
+child-linear: exit(-1)
+child-linear: exit(-1)
+Execution of 'page-parallel' complete.
+Timer: 127 ticks
+Thread: 30 idle ticks, 67 kernel ticks, 30 user ticks
+hda2 (filesys): 3128 reads, 2632 writes
+hda3 (scratch): 1312 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1332 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/vm/page-merge-seq FAILURE:
+
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (page-merge-seq) begin
+  (page-merge-seq) init
+  (page-merge-seq) sort chunk 0
+  (page-merge-seq) sort chunk 1
+  (page-merge-seq) sort chunk 2
+  (page-merge-seq) sort chunk 3
+  (page-merge-seq) sort chunk 4
+  (page-merge-seq) sort chunk 5
+  (page-merge-seq) sort chunk 6
+  (page-merge-seq) sort chunk 7
+  (page-merge-seq) sort chunk 8
+  (page-merge-seq) sort chunk 9
+  (page-merge-seq) sort chunk 10
+  (page-merge-seq) sort chunk 11
+  (page-merge-seq) sort chunk 12
+  (page-merge-seq) sort chunk 13
+  (page-merge-seq) sort chunk 14
+  (page-merge-seq) sort chunk 15
+  (page-merge-seq) merge
+  (page-merge-seq) verify
+  (page-merge-seq) success, buf_idx=1,032,192
+  (page-merge-seq) end
+Differences in `diff -u' format:
+- (page-merge-seq) begin
+- (page-merge-seq) init
+- (page-merge-seq) sort chunk 0
+- (page-merge-seq) sort chunk 1
+- (page-merge-seq) sort chunk 2
+- (page-merge-seq) sort chunk 3
+- (page-merge-seq) sort chunk 4
+- (page-merge-seq) sort chunk 5
+- (page-merge-seq) sort chunk 6
+- (page-merge-seq) sort chunk 7
+- (page-merge-seq) sort chunk 8
+- (page-merge-seq) sort chunk 9
+- (page-merge-seq) sort chunk 10
+- (page-merge-seq) sort chunk 11
+- (page-merge-seq) sort chunk 12
+- (page-merge-seq) sort chunk 13
+- (page-merge-seq) sort chunk 14
+- (page-merge-seq) sort chunk 15
+- (page-merge-seq) merge
+- (page-merge-seq) verify
+- (page-merge-seq) success, buf_idx=1,032,192
+- (page-merge-seq) end
+
+(Process exit codes are excluded for matching purposes.)
+
+OUTPUT FROM tests/vm/page-merge-seq:
+
+Copying tests/vm/page-merge-seq to scratch partition...
+Copying tests/vm/child-sort to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/GVcVwKdAUU.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run page-merge-seq
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 1,317 sectors (658 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'page-merge-seq' into the file system...
+Putting 'child-sort' into the file system...
+Erasing ustar archive...
+Executing 'page-merge-seq':
+page-merge-seq: exit(-1)
+Execution of 'page-merge-seq' complete.
+Timer: 94 ticks
+Thread: 30 idle ticks, 59 kernel ticks, 5 user ticks
+hda2 (filesys): 668 reads, 2640 writes
+hda3 (scratch): 1316 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1024 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/vm/page-merge-par FAILURE:
+
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (page-merge-par) begin
+  (page-merge-par) init
+  (page-merge-par) sort chunk 0
+  (page-merge-par) sort chunk 1
+  (page-merge-par) sort chunk 2
+  (page-merge-par) sort chunk 3
+  (page-merge-par) sort chunk 4
+  (page-merge-par) sort chunk 5
+  (page-merge-par) sort chunk 6
+  (page-merge-par) sort chunk 7
+  (page-merge-par) wait for child 0
+  (page-merge-par) wait for child 1
+  (page-merge-par) wait for child 2
+  (page-merge-par) wait for child 3
+  (page-merge-par) wait for child 4
+  (page-merge-par) wait for child 5
+  (page-merge-par) wait for child 6
+  (page-merge-par) wait for child 7
+  (page-merge-par) merge
+  (page-merge-par) verify
+  (page-merge-par) success, buf_idx=1,048,576
+  (page-merge-par) end
+Differences in `diff -u' format:
+- (page-merge-par) begin
+- (page-merge-par) init
+- (page-merge-par) sort chunk 0
+- (page-merge-par) sort chunk 1
+- (page-merge-par) sort chunk 2
+- (page-merge-par) sort chunk 3
+- (page-merge-par) sort chunk 4
+- (page-merge-par) sort chunk 5
+- (page-merge-par) sort chunk 6
+- (page-merge-par) sort chunk 7
+- (page-merge-par) wait for child 0
+- (page-merge-par) wait for child 1
+- (page-merge-par) wait for child 2
+- (page-merge-par) wait for child 3
+- (page-merge-par) wait for child 4
+- (page-merge-par) wait for child 5
+- (page-merge-par) wait for child 6
+- (page-merge-par) wait for child 7
+- (page-merge-par) merge
+- (page-merge-par) verify
+- (page-merge-par) success, buf_idx=1,048,576
+- (page-merge-par) end
+
+(Process exit codes are excluded for matching purposes.)
+
+OUTPUT FROM tests/vm/page-merge-par:
+
+Copying tests/vm/page-merge-par to scratch partition...
+Copying tests/vm/child-sort to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/0egqpttwyN.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run page-merge-par
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 1,319 sectors (659 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'page-merge-par' into the file system...
+Putting 'child-sort' into the file system...
+Erasing ustar archive...
+Executing 'page-merge-par':
+page-merge-par: exit(-1)
+Execution of 'page-merge-par' complete.
+Timer: 102 ticks
+Thread: 30 idle ticks, 66 kernel ticks, 6 user ticks
+hda2 (filesys): 668 reads, 2644 writes
+hda3 (scratch): 1318 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1025 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/vm/page-merge-mm FAILURE:
+
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (page-merge-mm) begin
+  (page-merge-mm) init
+  (page-merge-mm) sort chunk 0
+  (page-merge-mm) sort chunk 1
+  (page-merge-mm) sort chunk 2
+  (page-merge-mm) sort chunk 3
+  (page-merge-mm) sort chunk 4
+  (page-merge-mm) sort chunk 5
+  (page-merge-mm) sort chunk 6
+  (page-merge-mm) sort chunk 7
+  (page-merge-mm) wait for child 0
+  (page-merge-mm) wait for child 1
+  (page-merge-mm) wait for child 2
+  (page-merge-mm) wait for child 3
+  (page-merge-mm) wait for child 4
+  (page-merge-mm) wait for child 5
+  (page-merge-mm) wait for child 6
+  (page-merge-mm) wait for child 7
+  (page-merge-mm) merge
+  (page-merge-mm) verify
+  (page-merge-mm) success, buf_idx=1,048,576
+  (page-merge-mm) end
+Differences in `diff -u' format:
+- (page-merge-mm) begin
+- (page-merge-mm) init
+- (page-merge-mm) sort chunk 0
+- (page-merge-mm) sort chunk 1
+- (page-merge-mm) sort chunk 2
+- (page-merge-mm) sort chunk 3
+- (page-merge-mm) sort chunk 4
+- (page-merge-mm) sort chunk 5
+- (page-merge-mm) sort chunk 6
+- (page-merge-mm) sort chunk 7
+- (page-merge-mm) wait for child 0
+- (page-merge-mm) wait for child 1
+- (page-merge-mm) wait for child 2
+- (page-merge-mm) wait for child 3
+- (page-merge-mm) wait for child 4
+- (page-merge-mm) wait for child 5
+- (page-merge-mm) wait for child 6
+- (page-merge-mm) wait for child 7
+- (page-merge-mm) merge
+- (page-merge-mm) verify
+- (page-merge-mm) success, buf_idx=1,048,576
+- (page-merge-mm) end
+
+(Process exit codes are excluded for matching purposes.)
+
+OUTPUT FROM tests/vm/page-merge-mm:
+
+Copying tests/vm/page-merge-mm to scratch partition...
+Copying tests/vm/child-qsort-mm to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/gb0g4S3IkZ.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run page-merge-mm
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 1,323 sectors (661 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'page-merge-mm' into the file system...
+Putting 'child-qsort-mm' into the file system...
+Erasing ustar archive...
+Executing 'page-merge-mm':
+page-merge-mm: exit(-1)
+Execution of 'page-merge-mm' complete.
+Timer: 101 ticks
+Thread: 30 idle ticks, 65 kernel ticks, 6 user ticks
+hda2 (filesys): 668 reads, 2652 writes
+hda3 (scratch): 1322 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1024 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/vm/page-merge-stk FAILURE:
+
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (page-merge-stk) begin
+  (page-merge-stk) init
+  (page-merge-stk) sort chunk 0
+  (page-merge-stk) sort chunk 1
+  (page-merge-stk) sort chunk 2
+  (page-merge-stk) sort chunk 3
+  (page-merge-stk) sort chunk 4
+  (page-merge-stk) sort chunk 5
+  (page-merge-stk) sort chunk 6
+  (page-merge-stk) sort chunk 7
+  (page-merge-stk) wait for child 0
+  (page-merge-stk) wait for child 1
+  (page-merge-stk) wait for child 2
+  (page-merge-stk) wait for child 3
+  (page-merge-stk) wait for child 4
+  (page-merge-stk) wait for child 5
+  (page-merge-stk) wait for child 6
+  (page-merge-stk) wait for child 7
+  (page-merge-stk) merge
+  (page-merge-stk) verify
+  (page-merge-stk) success, buf_idx=1,048,576
+  (page-merge-stk) end
+Differences in `diff -u' format:
+- (page-merge-stk) begin
+- (page-merge-stk) init
+- (page-merge-stk) sort chunk 0
+- (page-merge-stk) sort chunk 1
+- (page-merge-stk) sort chunk 2
+- (page-merge-stk) sort chunk 3
+- (page-merge-stk) sort chunk 4
+- (page-merge-stk) sort chunk 5
+- (page-merge-stk) sort chunk 6
+- (page-merge-stk) sort chunk 7
+- (page-merge-stk) wait for child 0
+- (page-merge-stk) wait for child 1
+- (page-merge-stk) wait for child 2
+- (page-merge-stk) wait for child 3
+- (page-merge-stk) wait for child 4
+- (page-merge-stk) wait for child 5
+- (page-merge-stk) wait for child 6
+- (page-merge-stk) wait for child 7
+- (page-merge-stk) merge
+- (page-merge-stk) verify
+- (page-merge-stk) success, buf_idx=1,048,576
+- (page-merge-stk) end
+
+(Process exit codes are excluded for matching purposes.)
+
+OUTPUT FROM tests/vm/page-merge-stk:
+
+Copying tests/vm/page-merge-stk to scratch partition...
+Copying tests/vm/child-qsort to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/q_S82bTKSp.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run page-merge-stk
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 1,323 sectors (661 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'page-merge-stk' into the file system...
+Putting 'child-qsort' into the file system...
+Erasing ustar archive...
+Executing 'page-merge-stk':
+page-merge-stk: exit(-1)
+Execution of 'page-merge-stk' complete.
+Timer: 101 ticks
+Thread: 30 idle ticks, 64 kernel ticks, 7 user ticks
+hda2 (filesys): 668 reads, 2652 writes
+hda3 (scratch): 1322 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1026 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/vm/mmap-write FAILURE:
+
+run: compare read data against written data: FAILED
+
+OUTPUT FROM tests/vm/mmap-write:
+
+Copying tests/vm/mmap-write to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/iSUTvvE8NG.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run mmap-write
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  111,206,400 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 658 sectors (329 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'mmap-write' into the file system...
+Erasing ustar archive...
+Executing 'mmap-write':
+(mmap-write) begin
+(mmap-write) create "sample.txt"
+(mmap-write) open "sample.txt"
+(mmap-write) mmap "sample.txt"
+(mmap-write) compare read data against written data
+(mmap-write) compare read data against written data: FAILED
+mmap-write: exit(1)
+Execution of 'mmap-write' complete.
+Timer: 91 ticks
+Thread: 30 idle ticks, 56 kernel ticks, 5 user ticks
+hda2 (filesys): 671 reads, 1326 writes
+hda3 (scratch): 657 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1181 characters output
+Keyboard: 0 keys pressed
+Exception: 1 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/vm/mmap-exit FAILURE:
+
+run: wait for child (should return 0): FAILED
+
+OUTPUT FROM tests/vm/mmap-exit:
+
+Copying tests/vm/mmap-exit to scratch partition...
+Copying tests/vm/child-mm-wrt to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/H4d1Z0FeC1.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run mmap-exit
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 1,314 sectors (657 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'mmap-exit' into the file system...
+Putting 'child-mm-wrt' into the file system...
+Erasing ustar archive...
+Executing 'mmap-exit':
+(mmap-exit) begin
+(child-mm-wrt) begin
+(child-mm-wrt) create "sample.txt"
+(child-mm-wrt) open "sample.txt"
+(child-mm-wrt) mmap "sample.txt"
+(child-mm-wrt) end
+child-mm-wrt: exit(0)
+(mmap-exit) wait for child (should return 0): FAILED
+mmap-exit: exit(1)
+Execution of 'mmap-exit' complete.
+Timer: 105 ticks
+Thread: 30 idle ticks, 65 kernel ticks, 10 user ticks
+hda2 (filesys): 1314 reads, 2640 writes
+hda3 (scratch): 1313 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1237 characters output
+Keyboard: 0 keys pressed
+Exception: 1 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/vm/pt-write-code FAILURE:
+
+run: writing the code segment succeeded: FAILED
+
+OUTPUT FROM tests/vm/pt-write-code:
+
+Copying tests/vm/pt-write-code to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/aAsxVpaoO8.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run pt-write-code
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 655 sectors (327 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'pt-write-code' into the file system...
+Erasing ustar archive...
+Executing 'pt-write-code':
+(pt-write-code) begin
+(pt-write-code) writing the code segment succeeded: FAILED
+pt-write-code: exit(1)
+Execution of 'pt-write-code' complete.
+Timer: 87 ticks
+Thread: 30 idle ticks, 53 kernel ticks, 4 user ticks
+hda2 (filesys): 641 reads, 1314 writes
+hda3 (scratch): 654 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1051 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/vm/pt-write-code2 FAILURE:
+
+run: survived reading data into code segment: FAILED
+
+OUTPUT FROM tests/vm/pt-write-code2:
+
+Copying tests/vm/pt-write-code2 to scratch partition...
+Copying ../../tests/vm/sample.txt to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/q0sWwBNBwY.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run pt-write-code2
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 659 sectors (329 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'pt-write-code2' into the file system...
+Putting 'sample.txt' into the file system...
+Erasing ustar archive...
+Executing 'pt-write-code2':
+(pt-write-code2) begin
+(pt-write-code2) open "sample.txt"
+(pt-write-code2) survived reading data into code segment: FAILED
+pt-write-code2: exit(1)
+Execution of 'pt-write-code2' complete.
+Timer: 84 ticks
+Thread: 30 idle ticks, 50 kernel ticks, 4 user ticks
+hda2 (filesys): 671 reads, 1324 writes
+hda3 (scratch): 658 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1143 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/multi-recurse FAILURE:
+
+run: wait(exec("multi-recurse 11")) returned -1: FAILED
+
+OUTPUT FROM tests/userprog/multi-recurse:
+
+Copying tests/userprog/multi-recurse to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/ynsAbT1ibo.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run 'multi-recurse 15'
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  107,929,600 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 663 sectors (331 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'multi-recurse' into the file system...
+Erasing ustar archive...
+Executing 'multi-recurse 15':
+(multi-recurse) begin 15
+(multi-recurse) exec("multi-recurse 14")
+(multi-recurse) begin 14
+(multi-recurse) exec("multi-recurse 13")
+(multi-recurse) begin 13
+(multi-recurse) exec("multi-recurse 12")
+(multi-recurse) begin 12
+(multi-recurse) exec("multi-recurse 11")
+multi-recurse: exit(-1)
+(multi-recurse) wait(exec("multi-recurse 11")) returned -1: FAILED
+multi-recurse: exit(1)
+(multi-recurse) wait(exec("multi-recurse 12")) returned -1: FAILED
+multi-recurse: exit(1)
+(multi-recurse) wait(exec("multi-recurse 13")) returned -1: FAILED
+multi-recurse: exit(1)
+(multi-recurse) wait(exec("multi-recurse 14")) returned -1: FAILED
+multi-recurse: exit(1)
+Execution of 'multi-recurse 15' complete.
+Timer: 107 ticks
+Thread: 30 idle ticks, 59 kernel ticks, 18 user ticks
+hda2 (filesys): 2939 reads, 1330 writes
+hda3 (scratch): 662 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1609 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/rox-simple FAILURE:
+
+run: try to write "rox-simple": FAILED
+
+OUTPUT FROM tests/userprog/rox-simple:
+
+Copying tests/userprog/rox-simple to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/CFALCnr3RV.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run rox-simple
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 656 sectors (328 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'rox-simple' into the file system...
+Erasing ustar archive...
+Executing 'rox-simple':
+(rox-simple) begin
+(rox-simple) open "rox-simple"
+(rox-simple) read "rox-simple"
+(rox-simple) try to write "rox-simple"
+(rox-simple) try to write "rox-simple": FAILED
+rox-simple: exit(1)
+Execution of 'rox-simple' complete.
+Timer: 84 ticks
+Thread: 30 idle ticks, 50 kernel ticks, 4 user ticks
+hda2 (filesys): 645 reads, 1317 writes
+hda3 (scratch): 655 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1122 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/rox-child FAILURE:
+
+run: try to write "child-rox": FAILED
+
+OUTPUT FROM tests/userprog/rox-child:
+
+Copying tests/userprog/rox-child to scratch partition...
+Copying tests/userprog/child-rox to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/vRwUd4auTz.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run rox-child
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  108,134,400 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 1,320 sectors (660 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'rox-child' into the file system...
+Putting 'child-rox' into the file system...
+Erasing ustar archive...
+Executing 'rox-child':
+(rox-child) begin
+(rox-child) open "child-rox"
+(rox-child) read "child-rox"
+(rox-child) write "child-rox"
+(rox-child) exec "child-rox 1"
+(child-rox) begin
+(child-rox) try to write "child-rox"
+(child-rox) try to write "child-rox": FAILED
+child-rox: exit(1)
+(rox-child) wait for child: FAILED
+rox-child: exit(1)
+Execution of 'rox-child' complete.
+Timer: 124 ticks
+Thread: 30 idle ticks, 84 kernel ticks, 10 user ticks
+hda2 (filesys): 1295 reads, 2648 writes
+hda3 (scratch): 1319 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1291 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/rox-multichild FAILURE:
+
+run: try to write "child-rox": FAILED
+
+OUTPUT FROM tests/userprog/rox-multichild:
+
+Copying tests/userprog/rox-multichild to scratch partition...
+Copying tests/userprog/child-rox to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/jbxR0h9B_N.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run rox-multichild
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 1,320 sectors (660 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'rox-multichild' into the file system...
+Putting 'child-rox' into the file system...
+Erasing ustar archive...
+Executing 'rox-multichild':
+(rox-multichild) begin
+(rox-multichild) open "child-rox"
+(rox-multichild) read "child-rox"
+(rox-multichild) write "child-rox"
+(rox-multichild) exec "child-rox 5"
+(child-rox) begin
+(child-rox) try to write "child-rox"
+(child-rox) try to write "child-rox": FAILED
+child-rox: exit(1)
+(rox-multichild) wait for child: FAILED
+rox-multichild: exit(1)
+Execution of 'rox-multichild' complete.
+Timer: 97 ticks
+Thread: 30 idle ticks, 60 kernel ticks, 7 user ticks
+hda2 (filesys): 1295 reads, 2648 writes
+hda3 (scratch): 1319 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1344 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/multi-child-fd FAILURE:
+
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (multi-child-fd) begin
+  (multi-child-fd) open "sample.txt"
+  (child-close) begin
+  (child-close) end
+  child-close: exit(0)
+  (multi-child-fd) wait(exec()) = 0
+  (multi-child-fd) verified contents of "sample.txt"
+  (multi-child-fd) end
+  multi-child-fd: exit(0)
+Differences in `diff -u' format:
+  (multi-child-fd) begin
+  (multi-child-fd) open "sample.txt"
+  (child-close) begin
+  (child-close) end
+  child-close: exit(0)
+- (multi-child-fd) wait(exec()) = 0
++ (multi-child-fd) wait(exec()) = -1
+  (multi-child-fd) verified contents of "sample.txt"
+  (multi-child-fd) end
+  multi-child-fd: exit(0)
+Acceptable output:
+  (multi-child-fd) begin
+  (multi-child-fd) open "sample.txt"
+  (child-close) begin
+  child-close: exit(-1)
+  (multi-child-fd) wait(exec()) = -1
+  (multi-child-fd) verified contents of "sample.txt"
+  (multi-child-fd) end
+  multi-child-fd: exit(0)
+Differences in `diff -u' format:
+  (multi-child-fd) begin
+  (multi-child-fd) open "sample.txt"
+  (child-close) begin
+- child-close: exit(-1)
++ (child-close) end
++ child-close: exit(0)
+  (multi-child-fd) wait(exec()) = -1
+  (multi-child-fd) verified contents of "sample.txt"
+  (multi-child-fd) end
+  multi-child-fd: exit(0)
+
+OUTPUT FROM tests/userprog/multi-child-fd:
+
+Copying tests/userprog/multi-child-fd to scratch partition...
+Copying ../../tests/userprog/sample.txt to scratch partition...
+Copying tests/userprog/child-close to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/vYLYLA19_G.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run multi-child-fd
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 1,320 sectors (660 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'multi-child-fd' into the file system...
+Putting 'sample.txt' into the file system...
+Putting 'child-close' into the file system...
+Erasing ustar archive...
+Executing 'multi-child-fd':
+(multi-child-fd) begin
+(multi-child-fd) open "sample.txt"
+(child-close) begin
+(child-close) end
+child-close: exit(0)
+(multi-child-fd) wait(exec()) = -1
+(multi-child-fd) verified contents of "sample.txt"
+(multi-child-fd) end
+multi-child-fd: exit(0)
+Execution of 'multi-child-fd' complete.
+Timer: 105 ticks
+Thread: 30 idle ticks, 66 kernel ticks, 10 user ticks
+hda2 (filesys): 1318 reads, 2648 writes
+hda3 (scratch): 1319 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1296 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/read-bad-ptr FAILURE:
+
+Kernel panic in run: PANIC at ../../lib/kernel/list.c:84 in list_next(): assertion `is_head (elem) || is_interior (elem)' failed.
+Call stack: 0xc0029beb 0xc0029ec0 0xc002baa8 0xc002b676 0xc003137c 0xc002d8c7 0xc0021d44 0xc0021f6e 0xc002aee0 0xc002b199 0xc002b218 0xc002365d 0xc00236b7 0xc00312f3 0xc002cfd5 0xc002c36c 0xc0020fad 0xc002e3a6 0xc002dc7e 0xc0021d44 0xc0021f6e 0x804a4fc
+Translation of call stack:
+In kernel.o:
+0xc0029beb: debug_panic (.../../lib/kernel/debug.c:38)
+0xc0029ec0: list_next (..../../lib/kernel/list.c:85)
+0xc002baa8: find_elem (...h.c:319 (discriminator 2))
+0xc002b676: hash_find (.../../lib/kernel/hash.c:134)
+0xc003137c: get_SPTE (...d/../../vm/pageTable.c:44)
+0xc002d8c7: page_fault (.../userprog/exception.c:178)
+0xc0021d44: intr_handler (..../threads/interrupt.c:367)
+0xc0021f6e: intr_entry (threads/intr-stubs.S:38)
+0xc002aee0: bitmap_test (..../lib/kernel/bitmap.c:202)
+0xc002b199: bitmap_contains (..../lib/kernel/bitmap.c:260)
+0xc002b218: bitmap_all (..../lib/kernel/bitmap.c:286)
+0xc002365d: palloc_free_multiple (..../../threads/palloc.c:140)
+0xc00236b7: palloc_free_page (..../../threads/palloc.c:148)
+0xc00312f3: free_frameTable (...../../vm/frameTable.c:209)
+0xc002cfd5: pagedir_destroy (.../../userprog/pagedir.c:46)
+0xc002c36c: process_exit (...../userprog/process.c:223)
+0xc0020fad: thread_exit (..../../threads/thread.c:333)
+0xc002e3a6: syscall_exec (...../userprog/syscall.c:352)
+0xc002dc7e: syscall_handler (...../userprog/syscall.c:102)
+0xc0021d44: intr_handler (..../threads/interrupt.c:367)
+0xc0021f6e: intr_entry (threads/intr-stubs.S:38)
+In tests/userprog/read-bad-ptr:
+0x0804a4fc: exit (.../../lib/user/syscall.c:74)
+Translations of user virtual addresses above are based on a guess at
+the binary to use.  If this guess is incorrect, then those
+translations will be misleading.
+
+OUTPUT FROM tests/userprog/read-bad-ptr:
+
+Copying tests/userprog/read-bad-ptr to scratch partition...
+Copying ../../tests/userprog/sample.txt to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/oWZUB8AJem.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run read-bad-ptr
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 658 sectors (329 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'read-bad-ptr' into the file system...
+Putting 'sample.txt' into the file system...
+Erasing ustar archive...
+Executing 'read-bad-ptr':
+(read-bad-ptr) begin
+(read-bad-ptr) open "sample.txt"
+(read-bad-ptr) should not have survived read(): FAILED
+read-bad-ptr: exit(1)
+Kernel PANIC at ../../lib/kernel/list.c:84 in list_next(): assertion `is_head (elem) || is_interior (elem)' failed.
+Call stack: 0xc0029beb 0xc0029ec0 0xc002baa8 0xc002b676 0xc003137c 0xc002d8c7 0xc0021d44 0xc0021f6e 0xc002aee0 0xc002b199 0xc002b218 0xc002365d 0xc00236b7 0xc00312f3 0xc002cfd5 0xc002c36c 0xc0020fad 0xc002e3a6 0xc002dc7e 0xc0021d44 0xc0021f6e 0x804a4fcKernel PANIC recursion at ../../threads/malloc.c:278 in block_to_arena().
+Timer: 95 ticks
+Thread: 31 idle ticks, 59 kernel ticks, 5 user ticks
+hda2 (filesys): 671 reads, 1322 writes
+hda3 (scratch): 657 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1523 characters output
+Keyboard: 0 keys pressed
+Exception: 3 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/userprog/exec-missing FAILURE:
+
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (exec-missing) begin
+  load: no-such-file: open failed
+  (exec-missing) exec("no-such-file"): -1
+  no-such-file: exit(-1)
+  (exec-missing) end
+  exec-missing: exit(0)
+Differences in `diff -u' format:
+  (exec-missing) begin
+- load: no-such-file: open failed
+- (exec-missing) exec("no-such-file"): -1
+- no-such-file: exit(-1)
++ (exec-missing) exec("no-such-file"): 4
+  (exec-missing) end
+  exec-missing: exit(0)
++ load: no-such-file: open failed
++ no-such-file: exit(-1)
+Acceptable output:
+  (exec-missing) begin
+  load: no-such-file: open failed
+  no-such-file: exit(-1)
+  (exec-missing) exec("no-such-file"): -1
+  (exec-missing) end
+  exec-missing: exit(0)
+Differences in `diff -u' format:
+  (exec-missing) begin
+- load: no-such-file: open failed
+- no-such-file: exit(-1)
+- (exec-missing) exec("no-such-file"): -1
++ (exec-missing) exec("no-such-file"): 4
+  (exec-missing) end
+  exec-missing: exit(0)
++ load: no-such-file: open failed
++ no-such-file: exit(-1)
+Acceptable output:
+  (exec-missing) begin
+  load: no-such-file: open failed
+  (exec-missing) exec("no-such-file"): -1
+  (exec-missing) end
+  exec-missing: exit(0)
+Differences in `diff -u' format:
+  (exec-missing) begin
+- load: no-such-file: open failed
+- (exec-missing) exec("no-such-file"): -1
++ (exec-missing) exec("no-such-file"): 4
+  (exec-missing) end
+  exec-missing: exit(0)
++ load: no-such-file: open failed
++ no-such-file: exit(-1)
+Acceptable output:
+  (exec-missing) begin
+  (exec-missing) exec("no-such-file"): -1
+  (exec-missing) end
+  exec-missing: exit(0)
+Differences in `diff -u' format:
+  (exec-missing) begin
+- (exec-missing) exec("no-such-file"): -1
++ (exec-missing) exec("no-such-file"): 4
+  (exec-missing) end
+  exec-missing: exit(0)
++ load: no-such-file: open failed
++ no-such-file: exit(-1)
+
+OUTPUT FROM tests/userprog/exec-missing:
+
+Copying tests/userprog/exec-missing to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/0wB0VARWnJ.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run exec-missing
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 655 sectors (327 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'exec-missing' into the file system...
+Erasing ustar archive...
+Executing 'exec-missing':
+(exec-missing) begin
+(exec-missing) exec("no-such-file"): 4
+(exec-missing) end
+exec-missing: exit(0)
+load: no-such-file: open failed
+no-such-file: exit(-1)
+Execution of 'exec-missing' complete.
+Timer: 90 ticks
+Thread: 30 idle ticks, 56 kernel ticks, 4 user ticks
+hda2 (filesys): 658 reads, 1314 writes
+hda3 (scratch): 654 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 1099 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/filesys/base/syn-read FAILURE:
+
+Kernel panic in run: PANIC at ../../lib/kernel/list.c:171 in list_insert(): assertion `is_interior (before) || is_tail (before)' failed.
+Call stack: 0xc0029beb 0xc002a053 0xc002a1f7 0xc0022bc4 0xc002c2ca 0xc00208ae 0xc002098d 0xc00203c5
+Translation of call stack:
+0xc0029beb: debug_panic (.../../lib/kernel/debug.c:38)
+0xc002a053: list_insert (.../../lib/kernel/list.c:172)
+0xc002a1f7: list_push_back (.../../lib/kernel/list.c:219)
+0xc0022bc4: sema_down (.../../../threads/synch.c:72)
+0xc002c2ca: process_wait (...../userprog/process.c:181)
+0xc00208ae: run_task (.../../../threads/init.c:303)
+0xc002098d: run_actions (.../../../threads/init.c:355)
+0xc00203c5: pintos_init (.../../../threads/init.c:145)
+
+OUTPUT FROM tests/filesys/base/syn-read:
+
+Copying tests/filesys/base/syn-read to scratch partition...
+Copying tests/filesys/base/child-syn-read to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/D2bFbMtfVs.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run syn-read
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 1,323 sectors (661 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'syn-read' into the file system...
+Putting 'child-syn-read' into the file system...
+Erasing ustar archive...
+Executing 'syn-read':
+(syn-read) begin
+(syn-read) create "data"
+(syn-read) open "data"
+(syn-read) write "data"
+(syn-read) close "data"
+(syn-read) exec child 1 of 10: "child-syn-read 0"
+(syn-read) exec child 2 of 10: "child-syn-read 1"
+(syn-read) exec child 3 of 10: "child-syn-read 2"
+(syn-read) exec child 4 of 10: "child-syn-read 3"
+(syn-read) exec child 5 of 10: "child-syn-read 4"
+(syn-read) exec child 6 of 10: "child-syn-read 5"
+(syn-read) exec child 7 of 10: "child-syn-read 6"
+(syn-read) exec child 8 of 10: "child-syn-read 7"
+(syn-read) exec child 9 of 10: "child-syn-read 8"
+(syn-read) exec child 10 of 10: "child-syn-read 9"
+(child-syn-read) open "data": FAILED
+child-syn-read: exit(1)
+(child-syn-read) open "data": FAILED
+child-syn-read: exit(1)
+load: child-syn-read: open failed
+child-syn-read: exit(-1)
+(child-syn-read) open "data": FAILED
+child-syn-read: exit(1)
+load: child-syn-read: open failed
+child-syn-read: exit(-1)
+load: child-syn-read: open failed
+child-syn-read: exit(-1)
+load: child-syn-read: open failed
+child-syn-read: exit(-1)
+load: child-syn-read: open failed
+child-syn-read: exit(-1)
+load: child-syn-read: open failed
+child-syn-read: exit(-1)
+(syn-read) wait for child 1 of 10 returned -1 (expected 0)
+(syn-read) wait for child 1 of 10 returned -1 (expected 0): FAILED
+syn-read: exit(1)
+Kernel PANIC at ../../lib/kernel/list.c:171 in list_insert(): assertion `is_interior (before) || is_tail (before)' failed.
+Call stack: 0xc0029beb 0xc002a053 0xc002a1f7 0xc0022bc4 0xc002c2ca 0xc00208ae 0xc002098d 0xc00203c5.
+The `backtrace' program can make call stacks useful.
+Read "Backtraces" in the "Debugging Tools" chapter
+of the Pintos documentation for more information.
+Timer: 125 ticks
+Thread: 30 idle ticks, 65 kernel ticks, 30 user ticks
+hda2 (filesys): 3185 reads, 2660 writes
+hda3 (scratch): 1322 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 2621 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+DETAILS OF tests/filesys/base/syn-write FAILURE:
+
+run: ((null)) open "stuff": FAILED
+
+OUTPUT FROM tests/filesys/base/syn-write:
+
+Copying tests/filesys/base/syn-write to scratch partition...
+Copying tests/filesys/base/child-syn-wrt to scratch partition...
+qemu-system-i386 -device isa-debug-exit -drive format=raw,media=disk,index=0,file=/tmp/he7ZojXUW3.dsk -m 4 -net none -nographic -monitor null
+Pintos hda1
+Loading.............
+Kernel command line: -q -f extract run syn-write
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  104,755,200 loops/s.
+hda: 14,112 sectors (6 MB), model "QM00001", serial "QEMU HARDDISK"
+hda1: 217 sectors (108 kB), Pintos OS kernel (20)
+hda2: 4,096 sectors (2 MB), Pintos file system (21)
+hda3: 1,323 sectors (661 kB), Pintos scratch (22)
+hda4: 8,192 sectors (4 MB), Pintos swap (23)
+filesys: using hda2
+scratch: using hda3
+swap: using hda4
+Formatting file system...done.
+Boot complete.
+Extracting ustar archive from scratch device into file system...
+Putting 'syn-write' into the file system...
+Putting 'child-syn-wrt' into the file system...
+Erasing ustar archive...
+Executing 'syn-write':
+(syn-write) begin
+(syn-write) create "stuff"
+(syn-write) exec child 1 of 10: "child-syn-wrt 0"
+(syn-write) exec child 2 of 10: "child-syn-wrt 1"
+(syn-write) exec child 3 of 10: "child-syn-wrt 2"
+(syn-write) exec child 4 of 10: "child-syn-wrt 3"
+(syn-write) exec child 5 of 10: "child-syn-wrt 4"
+(syn-write) exec child 6 of 10: "child-syn-wrt 5"
+(syn-write) exec child 7 of 10: "child-syn-wrt 6"
+(syn-write) exec child 8 of 10: "child-syn-wrt 7"
+(syn-write) exec child 9 of 10: "child-syn-wrt 8"
+(syn-write) exec child 10 of 10: "child-syn-wrt 9"
+((null)) open "stuff": FAILED
+child-syn-wrt: exit(1)
+load: child-syn-wrt: open failed
+child-syn-wrt: exit(-1)
+((null)) open "stuff": FAILED
+child-syn-wrt: exit(1)
+load: child-syn-wrt: open failed
+child-syn-wrt: exit(-1)
+load: child-syn-wrt: open failed
+child-syn-wrt: exit(-1)
+load: child-syn-wrt: open failed
+child-syn-wrt: exit(-1)
+load: child-syn-wrt: open failed
+child-syn-wrt: exit(-1)
+load: child-syn-wrt: open failed
+child-syn-wrt: exit(-1)
+load: child-syn-wrt: open failed
+child-syn-wrt: exit(-1)
+(syn-write) wait for child 1 of 10 returned -1 (expected 0)
+(syn-write) wait for child 1 of 10 returned -1 (expected 0): FAILED
+syn-write: exit(1)
+child-syn-wrt: exit(2)
+Execution of 'syn-write' complete.
+Timer: 121 ticks
+Thread: 30 idle ticks, 65 kernel ticks, 26 user ticks
+hda2 (filesys): 2548 reads, 2667 writes
+hda3 (scratch): 1322 reads, 2 writes
+hda4 (swap): 0 reads, 0 writes
+Console: 2206 characters output
+Keyboard: 0 keys pressed
+Exception: 0 page faults
+Powering off...
