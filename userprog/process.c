@@ -141,17 +141,18 @@ start_process (void *file_name_)
 
    This function will be implemented in problem 2-2.  For now, it
    does nothing. */
+
 int
 process_wait (tid_t child_tid) 
 {
   /********** Our Implementation ***********/
   
   int exit_curr = thread_current()->exit_value;
-
+  //printf("Este es el valor -> %d\n", thread_current()->exit_value);
   //Si no hay nada en la lista, este proceso no tiene hijos.
   if(list_empty(&thread_current()->child_list)){
     return -1;
-  }
+  } 
 
   struct list_elem* iter_;
   struct thread* child = NULL;  
@@ -171,7 +172,6 @@ process_wait (tid_t child_tid)
 
 
   if(!child){
-    //printf("LLEGUE AQUI CHILD NULL\n");
     return -1;
   }
   /*Se remueve en caso de una segunda llamada a la función process_wait()*/
@@ -180,7 +180,6 @@ process_wait (tid_t child_tid)
   sema_down(&child->semaphore_wait);
 
   if(child->exit_value < -1){
-    //printf("LLEGUE AQUI EXIT VALUE\n");
     child->exit_value = exit_curr;
   }
 

@@ -210,7 +210,7 @@ bool add_EXE_to_SPTE (struct file *file, off_t ofs, void* upage,
 
 bool add_MMAP_EXE_to_SPTE (struct file *file, off_t ofs, void* upage,
                       uint32_t read_bytes){
-  struct sup_page_table_entry* SPTE;
+  struct sup_page_table_entry* SPTE;  
   //Se crea una sup page entry para la dirección de memoria upage
   SPTE = malloc(sizeof(struct  sup_page_table_entry));
   //Se agrega la información dada en la SPTE

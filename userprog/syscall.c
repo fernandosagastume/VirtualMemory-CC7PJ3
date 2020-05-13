@@ -53,6 +53,7 @@ void pointers_validation(const void* vaddr){
 	}
 
 	void* code_seg = (void *)0x08048000;
+
 	if(!vaddr || vaddr < code_seg){
 		syscall_exit(-1);
 	}
@@ -368,7 +369,7 @@ pid_t syscall_exec(const char *cmd_line)
 int syscall_wait(pid_t pid)
 {
 	//printf("ESTE ES EL PID -> %d\n", pid);
-	return process_wait(pid);
+	return process_wait((tid_t)pid);
 }
 
 
@@ -507,6 +508,7 @@ syscall_read(int fd, void* buffer, unsigned size){
 
 int 
 syscall_write(int fd, const void* buffer, unsigned size){
+
 	int bytes_to_write = 0; 
 	lock_acquire(&lockFS);
 	struct thread* curr = thread_current();
@@ -739,7 +741,7 @@ mmap_files_totally_destroy(struct mmap_info* mmap_info_){
 	   /*Se verifica si la página esta dirty, si lo está entonces 
       	se escribe todo de regreso a disco, de lo contrario no pasa
       	nada.*/
-	  if (loaded && pagedir_is_dirty (curr->pagedir, SPTE->user_vaddr))
+	  if (loaded && pagedir_is_dirty (curr->pagedir, SPTE->user_vaddr) && (SPTE->file_offset >= 0))
 	    {
 	      //Se escribe todo de regreso a disco
 	      lock_acquire (&lockFS);
